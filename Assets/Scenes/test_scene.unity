@@ -167,11 +167,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aae8d705d159994dbccee75484d04d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numOfCols: 6
-  numOfRows: 6
+  manager: {fileID: 143350167}
   columnGap: 1.25
   rowGap: 1.25
   cellPrefab: {fileID: -8245986125788324908, guid: 8e8db845d70246a46b79f3453e2b3748, type: 3}
+--- !u!1 &143350166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 143350168}
+  - component: {fileID: 143350167}
+  m_Layer: 0
+  m_Name: Game_Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &143350167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143350166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c40fc309c30c429468a4797f89792084, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cells: []
+  item1: {fileID: -1468323025424670600, guid: 903e6e1f1baef8741a8fecea2044f513, type: 3}
+  item2: {fileID: 1033116897923356505, guid: 87306c7283d978a459c5f2b395fbc712, type: 3}
+  numOfCols: 6
+  numOfRows: 6
+  level1: {fileID: 0}
+  gridInit: {fileID: 0}
+--- !u!4 &143350168
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 143350166}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.6992596, y: -0.20898263, z: -0.22233263}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
