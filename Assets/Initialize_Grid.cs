@@ -1,0 +1,48 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Initialize_Grid : MonoBehaviour
+{
+    [SerializeField] public int numOfCols;
+    [SerializeField] public int numOfRows;
+
+    [SerializeField] private float columnGap;
+    [SerializeField] private float rowGap;
+
+    public Cell cellPrefab;
+
+    private Transform trans;
+    private Vector3 OriginalTrans;
+    private Transform currentSpawnPos;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        //gets the original transform of the empty controlling grid intialization
+        trans = GetComponent<Transform>();
+        OriginalTrans = trans.position;
+        currentSpawnPos = trans;
+
+        //loops through each row and offsets the new spawn position each time 
+        for(int rowCount = 0; rowCount < numOfRows; rowCount++)
+        {
+            for(int columnCount = 0; columnCount < numOfCols - 1; columnCount++)
+            {               
+                //instantiates the cell prefab and then adjusts spawn point
+                Instantiate(cellPrefab, currentSpawnPos.position, trans.rotation);
+                currentSpawnPos.position = new Vector3(currentSpawnPos.position.x + columnGap, currentSpawnPos.position.y, 0);
+            }
+
+            //moves up a row 
+            Instantiate(cellPrefab, currentSpawnPos.position, trans.rotation);
+            currentSpawnPos.position = new Vector3(OriginalTrans.x, currentSpawnPos.position.y + rowGap, 0);
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
