@@ -22,6 +22,12 @@ public class Game_manager : MonoBehaviour
         gridInit = FindObjectOfType<Initialize_Grid>();
         level1 = FindObjectOfType<Level_1_setup>();
 
+        for(int x = 0; x < 6; x++) {
+            for(int y = 0; y < 6; y++) {
+                Debug.Log("item to contain: " + level1.itemToContain[x, y]);
+            }
+        }
+
         gridInit.GridInitilization();
 
         cells = FindObjectsOfType<Cell>();
