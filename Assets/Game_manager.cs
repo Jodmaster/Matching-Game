@@ -19,20 +19,18 @@ public class Game_manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //finds both the grid initialization script and level item placement script 
         gridInit = FindObjectOfType<Initialize_Grid>();
         level1 = FindObjectOfType<Level_1_setup>();
 
-        for(int x = 0; x < 6; x++) {
-            for(int y = 0; y < 6; y++) {
-                Debug.Log("item to contain: " + level1.itemToContain[x, y]);
-            }
-        }
-
+        //inializes the grid 
         gridInit.GridInitilization();
 
+        //find all cell objects and set cell counter to 0 for item setting
         cells = FindObjectsOfType<Cell>();
         int cellCounter = 0;
 
+        //loops through all the cells to fill them with the appropriate item 
         for(int rowCount  = 0; rowCount < numOfRows; rowCount++)
         {
             for(int colCount = 0; colCount < numOfCols; colCount++)
@@ -52,9 +50,5 @@ public class Game_manager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
 }

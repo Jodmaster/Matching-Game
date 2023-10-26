@@ -18,7 +18,7 @@ public class Initialize_Grid : MonoBehaviour
     private int numOfRows;
     private int numOfCols;
 
-    // Start is called before the first frame update
+    //using awake instead of start as the info is needed for filling in game_manager start()
     void Awake()
     {
         numOfRows = manager.numOfRows;
@@ -28,12 +28,6 @@ public class Initialize_Grid : MonoBehaviour
         trans = GetComponent<Transform>();
         OriginalTrans = trans.position;
         currentSpawnPos = trans;   
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void GridInitilization()
