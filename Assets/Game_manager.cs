@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class Game_manager : MonoBehaviour
 {
+    public int turnCounter;
+
     public Cell[] cells;
+    public Cell[] selectedCells;
 
     public GridItem item1;
     public GridItem item2;
@@ -19,6 +23,11 @@ public class Game_manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameSetup();
+    }
+
+    private void GameSetup()
+    {
         //finds both the grid initialization script and level item placement script 
         gridInit = FindObjectOfType<Initialize_Grid>();
         level1 = FindObjectOfType<Level_1_setup>();
@@ -31,11 +40,11 @@ public class Game_manager : MonoBehaviour
         int cellCounter = 0;
 
         //loops through all the cells to fill them with the appropriate item 
-        for(int rowCount  = 0; rowCount < numOfRows; rowCount++)
+        for (int rowCount = 0; rowCount < numOfRows; rowCount++)
         {
-            for(int colCount = 0; colCount < numOfCols; colCount++)
+            for (int colCount = 0; colCount < numOfCols; colCount++)
             {
-                Cell cellToSet = cells[cellCounter]; 
+                Cell cellToSet = cells[cellCounter];
                 switch (level1.itemToContain[rowCount, colCount])
                 {
                     case 0:
@@ -43,12 +52,50 @@ public class Game_manager : MonoBehaviour
                         break;
                     case 1:
                         cellToSet.setContainedItem(item2);
-                       break;
+                        break;
                 }
                 cellCounter++;
             }
         }
     }
 
-    
+    public void Update()
+    {
+
+        if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
+        if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            playerTurn();
+        }
+    }
+
+    public void playerTurn() {
+                
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D cellHit = Physics2D.Raycast(ray.origin, ray.direction, 1000);
+
+        Debug.Log(cellHit.collider.gameObject.name);
+
+        if (cellHit){
+            if (selectedCells[0] != null && selectedCells[1] != null)
+            {
+                Debug.Log("clearing selected");
+                for (int i = 0; i < 2; i++) {
+                    selectedCells[i].setSelected(false);
+                    selectedCells[i] = null; 
+                }
+            }
+        
+
+            if (selectedCells[0] == null){
+                selectedCells[0] = cellHit.transform.GetComponent<Cell>();
+            } else {
+                selectedCells[1] = cellHit.transform.GetComponent<Cell>();
+            }
+        }
+
+  
+    }
 }
