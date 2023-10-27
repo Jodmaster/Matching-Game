@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -63,11 +62,9 @@ public class Game_manager : MonoBehaviour
     public void Update()
     {
 
-        //lets cells know they are selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
-        //when Left clicking check if they the player clicks a tile 
         if (Input.GetMouseButtonDown(0))
         {
             playerTurn();
@@ -76,13 +73,15 @@ public class Game_manager : MonoBehaviour
 
     public void playerTurn() {
                 
-        //raycasts at the point the player clicks
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit2D cellHit = Physics2D.Raycast(ray.origin, ray.direction, 100);
+        RaycastHit2D cellHit = Physics2D.Raycast(ray.origin, ray.direction, 1000);
+
+        Debug.Log(cellHit.collider.gameObject.name);
 
         if (cellHit){
             if (selectedCells[0] != null && selectedCells[1] != null)
             {
+                Debug.Log("clearing selected");
                 for (int i = 0; i < 2; i++) {
                     selectedCells[i].setSelected(false);
                     selectedCells[i] = null; 
