@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -11,8 +12,8 @@ public class Game_manager : MonoBehaviour
     public Cell[] cells;
     public Cell[] selectedCells;
 
-    public GridItem item1;
-    public GridItem item2;
+    public Jewel jewel;
+    public Blocker blocker;
 
     [SerializeField] public int numOfCols;
     [SerializeField] public int numOfRows;
@@ -48,10 +49,28 @@ public class Game_manager : MonoBehaviour
                 switch (level1.itemToContain[rowCount, colCount])
                 {
                     case 0:
-                        cellToSet.setContainedItem(item1);
+
+                        cellToSet.setContainedItem(jewel);
+                        Jewel jewelToSet = (Jewel)cellToSet.containedItem;
+                        
+                        switch(level1.jemColorMap[rowCount, colCount]){  
+                            case 0:
+                                jewelToSet.jewelColor = Color.red;
+                                break;
+                            case 1:
+                                jewelToSet.jewelColor = Color.blue;
+                                break;
+                            case 2:
+                                jewelToSet.jewelColor = Color.green; 
+                                break;
+                        }
+
+                        cellToSet.containedItem = jewelToSet;
+                        
                         break;
+                    
                     case 1:
-                        cellToSet.setContainedItem(item2);
+                        cellToSet.setContainedItem(blocker);
                         break;
                 }
                 cellCounter++;
