@@ -1,15 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Game_manager : MonoBehaviour
 {
     public int turnCounter;
 
-    public Cell[] cells;
+    public Cell[,] cells;
     public Cell[] selectedCells;
 
     public Jewel jewel;
@@ -20,10 +15,12 @@ public class Game_manager : MonoBehaviour
 
     public Level_1_setup level1;
     public Initialize_Grid gridInit;
+    public Rule_checks rules;
 
     // Start is called before the first frame update
     void Start()
     {
+        cells = new Cell[numOfCols, numOfRows];
         GameSetup();
     }
 
@@ -32,12 +29,14 @@ public class Game_manager : MonoBehaviour
         //finds both the grid initialization script and level item placement script 
         gridInit = FindObjectOfType<Initialize_Grid>();
         level1 = FindObjectOfType<Level_1_setup>();
+        rules = FindObjectOfType<Rule_checks>();
 
         //inializes the grid 
         gridInit.GridInitilization();
 
         //find all cell objects and set cell counter to 0 for item setting
-        cells = FindObjectsOfType<Cell>();
+        Cell[] cellsTemp = FindObjectsOfType<Cell>();
+
         int cellCounter = 0;
 
         //loops through all the cells to fill them with the appropriate item 
@@ -45,7 +44,7 @@ public class Game_manager : MonoBehaviour
         {
             for (int colCount = 0; colCount < numOfCols; colCount++)
             {
-                Cell cellToSet = cells[cellCounter];
+                Cell cellToSet = cellsTemp[cellCounter];
                 switch (level1.itemToContain[rowCount, colCount])
                 {
                     case 0:
@@ -76,38 +75,55 @@ public class Game_manager : MonoBehaviour
                 cellCounter++;
             }
         }
+
+        //need to reset for next for loop
+        cellCounter = 0;
+
+        //reformats raw cell array into 2d array for easier management of cells and applying rules
+        for (int rowCount = 0; rowCount < numOfRows; rowCount++)
+        {
+            for(int colCount = 0; colCount < numOfCols; colCount++)
+            {
+                cells[rowCount, colCount] = cellsTemp[cellCounter]; 
+                cellCounter++;
+            }
+
+        }
+        
     }
 
     public void Update()
     {
-
+        //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
+        //calls playerTurn on left click
         if (Input.GetMouseButtonDown(0))
         {
             playerTurn();
+            rules.validCellSwaps(selectedCells[0]);
         }
     }
 
     public void playerTurn() {
-                
+        
+        //raycasts where the player clicks
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D cellHit = Physics2D.Raycast(ray.origin, ray.direction, 1000);
 
-        Debug.Log(cellHit.collider.gameObject.name);
-
+        
+        //if there is a cell and space in the selected cells array puts it in the next empty spot
+        //if the array is full it clears the array and then puts the cell in
         if (cellHit){
             if (selectedCells[0] != null && selectedCells[1] != null)
             {
-                Debug.Log("clearing selected");
                 for (int i = 0; i < 2; i++) {
                     selectedCells[i].setSelected(false);
                     selectedCells[i] = null; 
                 }
             }
         
-
             if (selectedCells[0] == null){
                 selectedCells[0] = cellHit.transform.GetComponent<Cell>();
             } else {

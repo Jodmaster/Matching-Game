@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using static GridItem_interface;
 
 public class Jewel : MonoBehaviour, GridItem_interface
 {
-    public int[,] posInGrid => throw new System.NotImplementedException();
-
     gridItemType GridItem_interface.itemType => gridItemType.Jewel;
     
     public Color jewelColor;

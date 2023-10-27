@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Initialize_Grid : MonoBehaviour
@@ -35,28 +32,36 @@ public class Initialize_Grid : MonoBehaviour
     public void GridInitilization()
     {
         //needed for renaming the cells as they are created
-        int cellNumber = 1;
+        int cellNumber = 0;
+        //col count is needed for assigning the cell its position 
+        int colCount = 0;
         Cell newCell;
 
         //loops through each row and offsets the new spawn position each time 
         for (int rowCount = 0; rowCount < numOfRows; rowCount++)
         {
+            
             for (int columnCount = 0; columnCount < numOfCols - 1; columnCount++)
             {
                 //instantiates the cell prefab and then adjusts spawn point
-                instantiateCell();
+                instantiateCell(rowCount, colCount);
                 currentSpawnPos.position = new Vector3(currentSpawnPos.position.x + columnGap, currentSpawnPos.position.y, 0);
+                colCount++;
             }
 
             //moves up a row 
-            instantiateCell();
+            instantiateCell(rowCount, colCount);
             currentSpawnPos.position = new Vector3(OriginalTrans.x, currentSpawnPos.position.y + rowGap, 0);
+            colCount = 0;
         }
 
-        void instantiateCell()
+        void instantiateCell(int row, int col)
         {   
+            //instantiates the the cell and adds a cell number
             //renames the cell to make for easier debugging and developing 
             newCell = Instantiate(cellPrefab, currentSpawnPos.position, trans.rotation);
+            newCell.setCellNumber(cellNumber);
+            newCell.position = new int[] {row, col};
             newCell.name = "Cell_" + cellNumber;
             cellNumber++;
         }

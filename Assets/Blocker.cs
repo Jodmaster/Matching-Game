@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using static GridItem_interface;
 
 public class Blocker : MonoBehaviour, GridItem_interface
 {
-    public GridItem_interface.gridItemType itemType => GridItem_interface.gridItemType.Blocker;
-    public int[,] posInGrid => throw new System.NotImplementedException();
+    public gridItemType itemType => gridItemType.Blocker;
 
     // Start is called before the first frame update
     void Start()
