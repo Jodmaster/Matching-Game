@@ -22,6 +22,7 @@ public class Game_manager : MonoBehaviour
     {
         cells = new Cell[numOfCols, numOfRows];
         GameSetup();
+        
     }
 
     private void GameSetup()
@@ -132,5 +133,10 @@ public class Game_manager : MonoBehaviour
         }
 
   
+    }
+
+    public Cell getCellAtPosition(int cellRow, int cellCol) {
+        Cell returnCell = cells[cellRow, cellCol];
+        return returnCell;
     }
 }

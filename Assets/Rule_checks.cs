@@ -24,21 +24,20 @@ public class Rule_checks : MonoBehaviour
         return false;
     }
 
-    public Cell[] validCellSwaps(Cell cell)
-    {
-        int[] numCheck = cell.position;
+    public Cell[] validCellSwaps(Cell cell) {
+
         Cell[] validCells = new Cell[4];
 
         int[] validRows = checkRows(cell);
         int[] validCols = checkCols(cell);
 
-        Debug.Log("rows: " + validRows[0]);
-        Debug.Log("cols: " + validCols[0]);
+        Debug.Log("pos is: " + cell.position[0] + ", " + validCols[0]);
+        
 
-        Debug.Log("rows: " + validRows[1]);
-        Debug.Log("cols: " + validCols[1]);
+        validCells[0] = manager.getCellAtPosition(0,0);
+        
 
-        return null;
+        return validCells;
 
         int[] checkRows(Cell celly)
         {
@@ -58,10 +57,10 @@ public class Rule_checks : MonoBehaviour
 
         int[] checkCols(Cell celly)
         {
-            int colPos = celly.position[0];
+            int colPos = celly.position[1];
             int[] validColPos = new int[2];
 
-            int[] possibleColPos = new int[2]{ colPos + 1, colPos - 1 };
+            int[] possibleColPos = new int[2]{colPos + 1, colPos - 1 };
 
 
             for (int i = 0; i < possibleColPos.Length; i++)
