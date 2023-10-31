@@ -8,10 +8,13 @@ public class Jewel : MonoBehaviour, GridItem_interface
     
     public Color jewelColor;
     public SpriteRenderer rend;
+    public Cell currentParent;
 
     // Start is called before the first frame update
     void Start()
     {
+        Cell currentParent = GetComponentInParent<Cell>();
+        this.name = "Jewel_" + currentParent.cellNumber;
         rend = GetComponent<SpriteRenderer>();
         rend.color = jewelColor;
     }

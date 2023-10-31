@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using static GridItem_interface;
 
 public class Game_manager : MonoBehaviour
 {
@@ -22,6 +24,7 @@ public class Game_manager : MonoBehaviour
     {
         cells = new Cell[numOfCols, numOfRows];
         GameSetup();
+
     }
 
     private void GameSetup()
@@ -98,11 +101,39 @@ public class Game_manager : MonoBehaviour
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
+        
+
         //calls playerTurn on left click
-        if (Input.GetMouseButtonDown(0))
-        {
+        if (Input.GetMouseButtonDown(0)) {
             playerTurn();
-            rules.validCellSwaps(selectedCells[0]);
+
+            if (selectedCells[0] != null) {
+                rules.CheckThreeInARow(selectedCells[0]);
+            }
+
+            if (selectedCells[0] != null && selectedCells[1] != null) { 
+                rules.canSwapJewels(selectedCells[0], selectedCells[1]);
+            }
+
+            if (rules.canSwap) {
+                swapJewels();
+            }
+        }
+    }
+
+    public void swapJewels() {
+        //gets the children of the selected cells
+        Transform cellItem1 = selectedCells[0].transform.GetChild(0);
+        Transform cellItem2 = selectedCells[1].transform.GetChild(0);
+
+        //checks that the got item is a jewel 
+        if (cellItem1.GetComponent<Jewel>() != null && cellItem2.GetComponent<Jewel>() != null) { 
+            //changes parents of the jewel and then updates the transform
+            cellItem1.SetParent(selectedCells[1].transform);
+            cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
+
+            cellItem2.SetParent(selectedCells[0].transform);
+            cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
         }
     }
 
@@ -112,7 +143,6 @@ public class Game_manager : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D cellHit = Physics2D.Raycast(ray.origin, ray.direction, 1000);
 
-        
         //if there is a cell and space in the selected cells array puts it in the next empty spot
         //if the array is full it clears the array and then puts the cell in
         if (cellHit){
@@ -122,6 +152,8 @@ public class Game_manager : MonoBehaviour
                     selectedCells[i].setSelected(false);
                     selectedCells[i] = null; 
                 }
+
+                rules.canSwap = false;
             }
         
             if (selectedCells[0] == null){

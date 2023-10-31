@@ -9,7 +9,7 @@ public class Rule_checks : MonoBehaviour
     void Start()
     {
         manager = FindObjectOfType<Game_manager>();
-        
+        canSwap = false;
     }
 
     // Update is called once per frame
@@ -18,10 +18,15 @@ public class Rule_checks : MonoBehaviour
         
     }
 
-    public bool canSwapJewels(Cell cell1, Cell cell2)
+    public void canSwapJewels(Cell cell1, Cell cell2)
     {
         Cell[] potentialSwaps = validCellSwaps(cell1);
-        return false;
+
+        for(int i = 0; i < potentialSwaps.Length; i++) {
+            if(potentialSwaps[i] == cell2) {
+                canSwap = true;
+            }
+        }
     }
 
     public Cell[] validCellSwaps(Cell cell) {
@@ -76,6 +81,62 @@ public class Rule_checks : MonoBehaviour
 
             //returns the array
             return validColPos;
+        }
+    }
+
+    public void CheckThreeInARow(Cell originCell) {
+
+        //getting origin jewel info
+        Color originJewel = originCell.transform.GetChild(0).GetComponent<Jewel>().jewelColor;
+        
+        Cell[] colToCheck = new Cell[5];
+        Cell[] rowToCheck = new Cell[5];
+
+        getColumn();
+        getRow();
+
+        int unbrokenStreak = 0;
+        Cell[] threeInRow = new Cell[3];
+        int threeInRowCounter = 0;
+
+        for (int i = 0; i < colToCheck.Length; i++) {
+            //TODO
+        }
+        
+        for (int i = 0; i < colToCheck.Length; i++) {
+           if(colToCheck[i] != null) {
+                //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
+                if(colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                    threeInRow[threeInRowCounter] = colToCheck[i];
+                    unbrokenStreak ++;
+                } else {
+                    //clears the three in row if there's a break in colors and resets the unbroken streak
+                    for (int x = 0; x < threeInRow.Length; x++){ threeInRow[x] = null; }
+                    threeInRowCounter = 0;
+                    unbrokenStreak = 0;
+                }
+           }
+
+           //if the unbroken streak reaches 3 break out of the loop 
+           if (unbrokenStreak == 3) {
+                break;
+           }
+        }
+
+        for(int i = 0; i < threeInRow.Length; i++) {
+            Debug.Log(threeInRow[i]);
+        }
+
+        void getColumn() {
+            for (int i = 0; i < colToCheck.Length; i++) {
+                colToCheck[i] = manager.getCellAtPosition(originCell.position[1] + i - 1, originCell.position[1]);
+            }
+        }
+
+        void getRow() {
+            for (int i = 0; i < rowToCheck.Length; i++) {
+                rowToCheck[i] = manager.getCellAtPosition(originCell.position[0], originCell.position[1] + i - 2);
+            }
         }
     }
 }
