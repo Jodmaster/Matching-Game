@@ -38,11 +38,9 @@ public class Initialize_Grid : MonoBehaviour
         Cell newCell;
 
         //loops through each row and offsets the new spawn position each time 
-        for (int rowCount = 0; rowCount < numOfRows; rowCount++)
-        {
-            
-            for (int columnCount = 0; columnCount < numOfCols - 1; columnCount++)
-            {
+        for (int rowCount = 0; rowCount < numOfRows; rowCount++){
+            for (int columnCount = 0; columnCount < numOfCols - 1; columnCount++){
+                
                 //instantiates the cell prefab and then adjusts spawn point
                 instantiateCell(rowCount, colCount);
                 currentSpawnPos.position = new Vector3(currentSpawnPos.position.x + columnGap, currentSpawnPos.position.y, 0);

@@ -22,8 +22,6 @@ public class Game_manager : MonoBehaviour
     {
         cells = new Cell[numOfCols, numOfRows];
         GameSetup();
-
-        Debug.Log(getCellAtPosition(0, 0));
     }
 
     private void GameSetup()
@@ -137,7 +135,18 @@ public class Game_manager : MonoBehaviour
     }
 
     public Cell getCellAtPosition(int cellRow, int cellCol) {
-        Cell returnCell = cells[cellRow, cellCol];
-        return returnCell;
+        
+        //unfortunatly cannot just get using the cells position so i decided to just loop through the whole array and check
+        //positions manually as there are only 36 cells
+
+        for(int rowCount = 0; rowCount < numOfRows; rowCount++) {
+            for(int colCount = 0; colCount < numOfCols; colCount++) {
+                if(cells[rowCount, colCount].position[0] == cellRow && cells[rowCount,colCount].position[1] == cellCol) {
+                    return cells[rowCount, colCount];
+                }
+            }
+        }
+        
+        return null;
     }
 }
