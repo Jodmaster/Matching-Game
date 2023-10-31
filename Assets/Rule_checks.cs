@@ -1,3 +1,4 @@
+using System.IO.IsolatedStorage;
 using UnityEngine;
 
 public class Rule_checks : MonoBehaviour
@@ -97,25 +98,25 @@ public class Rule_checks : MonoBehaviour
 
         int unbrokenStreak = 0;
         Cell[] threeInRow = new Cell[3];
-        int threeInRowCounter = 0;
-
-        for (int i = 0; i < colToCheck.Length; i++) {
-            //TODO
-        }
+        
         
         for (int i = 0; i < colToCheck.Length; i++) {
            if(colToCheck[i] != null) {
-                //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
-                if(colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                    threeInRow[threeInRowCounter] = colToCheck[i];
-                    unbrokenStreak ++;
-                } else {
-                    //clears the three in row if there's a break in colors and resets the unbroken streak
-                    for (int x = 0; x < threeInRow.Length; x++){ threeInRow[x] = null; }
-                    threeInRowCounter = 0;
-                    unbrokenStreak = 0;
-                }
-           }
+                if (colToCheck[i].GetComponentInChildren<Jewel>() != null) { 
+   
+                    //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
+                    if (colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                        threeInRow[unbrokenStreak] = colToCheck[i];
+                        
+                        unbrokenStreak++;
+                    } else {
+                        //clears the three in row if there's a break in colors and resets the unbroken streak
+                        for (int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
+                        
+                        unbrokenStreak = 0;
+                    }
+                } else { unbrokenStreak = 0;}
+           } else { unbrokenStreak = 0;}
 
            //if the unbroken streak reaches 3 break out of the loop 
            if (unbrokenStreak == 3) {
@@ -124,12 +125,12 @@ public class Rule_checks : MonoBehaviour
         }
 
         for(int i = 0; i < threeInRow.Length; i++) {
-            Debug.Log(threeInRow[i]);
+            Debug.Log("Three in a row " + i + ": " + threeInRow[i]);
         }
 
         void getColumn() {
             for (int i = 0; i < colToCheck.Length; i++) {
-                colToCheck[i] = manager.getCellAtPosition(originCell.position[1] + i - 1, originCell.position[1]);
+                colToCheck[i] = manager.getCellAtPosition(originCell.position[0] + i - 2, originCell.position[1]);
             }
         }
 
