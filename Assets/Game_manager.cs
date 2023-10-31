@@ -22,7 +22,8 @@ public class Game_manager : MonoBehaviour
     {
         cells = new Cell[numOfCols, numOfRows];
         GameSetup();
-        
+
+        Debug.Log(getCellAtPosition(0, 0));
     }
 
     private void GameSetup()
