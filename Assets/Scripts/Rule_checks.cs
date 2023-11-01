@@ -1,5 +1,7 @@
 using System.IO.IsolatedStorage;
+using Unity.Properties;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Rule_checks : MonoBehaviour
 {
@@ -9,9 +11,12 @@ public class Rule_checks : MonoBehaviour
     public Game_manager manager;
 
     public bool colElim;
-    public bool rowElim; 
+    public bool rowElim;
+    public bool squareElim;
+
     public Cell[] threeInCol;
     public Cell[] threeInRow;
+    public Cell[] sqaure;
 
     // Start is called before the first frame update
     void Start()
@@ -205,6 +210,24 @@ public class Rule_checks : MonoBehaviour
     }
 
     public void CheckSquare(Cell originCell){
+        Cell[] squareToCheck = new Cell[9];
+        
+        int counter = 0;
+        int colOffset = -1;
+        int rowOffset = -1;
+        
 
+        for(int rowCount = 0; rowCount < 3; rowCount++) {
+            for(int colCount = 0; colCount < 3; colCount++) {
+                squareToCheck[counter] = manager.getCellAtPosition(originCell.position[0] + rowOffset, originCell.position[1] + (colOffset + colCount));
+                counter++;
+            }
+
+            rowOffset++;
+        }
+
+        for(int i = 0; i < squareToCheck.Length; i++) {
+            Debug.Log("Cube cell " + i + ": " + squareToCheck[i]);
+        }
     }
 }

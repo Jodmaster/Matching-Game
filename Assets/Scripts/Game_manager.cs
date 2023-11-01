@@ -109,6 +109,9 @@ public class Game_manager : MonoBehaviour
             playerTurn();
 
             if (selectedCells[0] != null) {
+                rules.CheckSquare(selectedCells[0]);
+                
+                /**
                 //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
                 rules.CheckThreeInARow(selectedCells[0]);
                 Cell[] cellsToEliminate = new Cell[3];
@@ -128,7 +131,7 @@ public class Game_manager : MonoBehaviour
                     for(int i = 0; i < selectedCells.Length; i++) {
                         selectedCells[i] = null;
                     }
-                }              
+                } **/             
             }
 
             if (selectedCells[0] != null && selectedCells[1] != null) { 
