@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static GridItem_interface;
 
 public class Game_manager : MonoBehaviour
@@ -108,7 +109,26 @@ public class Game_manager : MonoBehaviour
             playerTurn();
 
             if (selectedCells[0] != null) {
+                //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
                 rules.CheckThreeInARow(selectedCells[0]);
+                Cell[] cellsToEliminate = new Cell[3];
+
+                //if found any potential eliminations get them in a array
+                if(rules.canEliminate) {
+                    if(rules.colElim) {
+                        cellsToEliminate = rules.threeInCol;
+                    } else if(rules.rowElim) {
+                        cellsToEliminate = rules.threeInRow;
+                    }
+
+                    //then delete the jewels from the cell
+                    eliminateJewels(cellsToEliminate);
+
+                    //clears selected cells so that the player can't swap afterwards
+                    for(int i = 0; i < selectedCells.Length; i++) {
+                        selectedCells[i] = null;
+                    }
+                }              
             }
 
             if (selectedCells[0] != null && selectedCells[1] != null) { 
@@ -134,6 +154,14 @@ public class Game_manager : MonoBehaviour
 
             cellItem2.SetParent(selectedCells[0].transform);
             cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+        }
+    }
+
+    public void eliminateJewels(Cell[] cellsToElim) {
+        //loops through the cells to Elim and destroys the contained jewels
+        for(int i = 0; i < cellsToElim.Length; i++) {
+            Transform jewelToDestroy = cellsToElim[i].transform.GetChild (0);
+            Destroy(jewelToDestroy.gameObject);
         }
     }
 

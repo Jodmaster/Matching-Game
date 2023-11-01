@@ -4,13 +4,21 @@ using UnityEngine;
 public class Rule_checks : MonoBehaviour
 {
     public bool canSwap;
+    public bool canEliminate;
+    
     public Game_manager manager;
+
+    public bool colElim;
+    public bool rowElim; 
+    public Cell[] threeInCol;
+    public Cell[] threeInRow;
 
     // Start is called before the first frame update
     void Start()
     {
         manager = FindObjectOfType<Game_manager>();
         canSwap = false;
+        canEliminate = false;
     }
 
     public void canSwapJewels(Cell cell1, Cell cell2)
@@ -85,7 +93,7 @@ public class Rule_checks : MonoBehaviour
 
         //getting origin jewel info
         Color originJewel = originCell.transform.GetChild(0).GetComponent<Jewel>().jewelColor;
-        
+
         //arrays to hold all the cells to check
         Cell[] colToCheck = new Cell[5];
         Cell[] rowToCheck = new Cell[5];
@@ -94,75 +102,105 @@ public class Rule_checks : MonoBehaviour
         getColumn();
         getRow();
 
-        //unbroken streak tracks how many cells of the right color have been found in a row 
+        //gets the cells that should be eliminated in a col or row around the origin and puts them in cell arrays for processing 
         int unbrokenStreak = 0;
-        Cell[] threeInCol = new Cell[3];
-        
-        //whole loop goes through colToCheck makes sure it's not an empty square and that it contains a jewel
-        for (int i = 0; i < colToCheck.Length; i++) {
-           if(colToCheck[i] != null) {
-                if (colToCheck[i].GetComponentInChildren<Jewel>() != null) { 
-   
-                    //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
-                    if (colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                        threeInCol[unbrokenStreak] = colToCheck[i];
-                        
-                        unbrokenStreak++;
-                    } else {
-                        //clears the three in row if there's a break in colors and resets the unbroken streak
-                        for (int x = 0; x < threeInCol.Length; x++) { threeInCol[x] = null; }                      
-                        unbrokenStreak = 0;
-                    }
-                } else { unbrokenStreak = 0;}
-           } else { unbrokenStreak = 0;}
-
-           //if the unbroken streak reaches 3 break out of the loop 
-           if (unbrokenStreak == 3) {
-                break;
-           }
-        }
-
-        //resets unbroken streak for next four loop 
-        unbrokenStreak = 0;
-        Cell[] threeInRow = new Cell[3];
-
-        for (int i = 0; i < rowToCheck.Length; i++) {
-            if (rowToCheck[i] != null) {
-                if (rowToCheck[i].GetComponentInChildren<Jewel>() != null) {
-
-                    //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
-                    if (rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                        threeInRow[unbrokenStreak] = rowToCheck[i];
-                        unbrokenStreak++;
-                    } else {
-                        //clears the three in row if there's a break in colors and resets the unbroken streak
-                        for (int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
-                        unbrokenStreak = 0;
-                    }
-                } else { unbrokenStreak = 0; }
-            } else { unbrokenStreak = 0; }
-
-            //if the unbroken streak reaches 3 break out of the loop 
-            if (unbrokenStreak == 3) {
-                break;
-            }
-        }
-
-        for(int x = 0; x < threeInRow.Length; x++)
-        {
-            Debug.Log("Three in col " + x + ": " + threeInRow[x]);
-        }
+        threeInCol = checkCanEliminateColumn(); 
+        threeInRow = checkCanEliminateRow(); 
 
         void getColumn() {
-            for (int i = 0; i < colToCheck.Length; i++) {
+            for(int i = 0; i < colToCheck.Length; i++) {
                 colToCheck[i] = manager.getCellAtPosition(originCell.position[0] + i - 2, originCell.position[1]);
             }
         }
 
         void getRow() {
-            for (int i = 0; i < rowToCheck.Length; i++) {
+            for(int i = 0; i < rowToCheck.Length; i++) {
                 rowToCheck[i] = manager.getCellAtPosition(originCell.position[0], originCell.position[1] + i - 2);
             }
+        }
+
+        Cell[] checkCanEliminateColumn() {
+
+            //unbroken streak tracks how many cells of the right color have been found in a row 
+            unbrokenStreak = 0;
+            colElim = false;
+            threeInCol = new Cell[3];
+
+            //whole loop goes through colToCheck makes sure it's not an empty square and that it contains a jewel
+            for(int i = 0; i < colToCheck.Length; i++) {
+                if(colToCheck[i] != null) {
+                    if(colToCheck[i].GetComponentInChildren<Jewel>() != null) {
+
+                        //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
+                        if(colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                            threeInCol[unbrokenStreak] = colToCheck[i];
+
+                            unbrokenStreak++;
+                        } else {
+                            //clears the three in row if there's a break in colors and resets the unbroken streak
+                            for(int x = 0; x < threeInCol.Length; x++) { threeInCol[x] = null; }
+                            unbrokenStreak = 0;
+                        }
+                    } else { unbrokenStreak = 0; }
+                } else { unbrokenStreak = 0; }
+
+                //if the unbroken streak reaches 3 break out of the loop 
+                if(unbrokenStreak == 3) {
+                    break;
+                }
+            }
+
+            int threeInColCounter = 0;
+            for(int i = 0; i < threeInCol.Length; i++) {
+                if(threeInCol[i] != null) { threeInColCounter++; }
+            }
+
+            if(threeInColCounter == 3) { 
+                canEliminate = true;
+                colElim = true;
+                return threeInCol; 
+            } else { canEliminate = false; return null; }
+        }
+
+        Cell[] checkCanEliminateRow() {
+            //resets unbroken streak for next four loop 
+            unbrokenStreak = 0;
+            rowElim = false;
+            threeInRow = new Cell[3];
+
+            for(int i = 0; i < rowToCheck.Length; i++) {
+                if(rowToCheck[i] != null) {
+                    if(rowToCheck[i].GetComponentInChildren<Jewel>() != null) {
+
+                        //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
+                        if(rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                            threeInRow[unbrokenStreak] = rowToCheck[i];
+                            unbrokenStreak++;
+                        } else {
+                            //clears the three in row if there's a break in colors and resets the unbroken streak
+                            for(int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
+                            unbrokenStreak = 0;
+                        }
+                    } else { unbrokenStreak = 0; }
+                } else { unbrokenStreak = 0; }
+
+                //if the unbroken streak reaches 3 break out of the loop 
+                if(unbrokenStreak == 3) {
+                    break;
+                }
+            }
+
+            //eliminating columns takes priority over rows this can be changed //TODO play test and find out 
+            if(!canEliminate) {
+                int threeInRowCounter = 0;
+                for(int i = 0; i < threeInRow.Length; i++) {
+                    if(threeInRow[i] != null) { threeInRowCounter++; }
+                }
+
+                if(threeInRowCounter == 3) { canEliminate = true; } else { canEliminate = false; }
+            }
+
+            if(canEliminate) { rowElim = true; return threeInRow; } else { return null; }
         }
     }
 
