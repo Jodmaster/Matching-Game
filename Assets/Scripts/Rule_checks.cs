@@ -209,7 +209,8 @@ public class Rule_checks : MonoBehaviour
         }
     }
 
-    public void CheckSquare(Cell originCell){
+    public Cell[] CheckSquare(Cell originCell){
+        
         Cell[] squareToCheck = new Cell[9];
         
         int counter = 0;
@@ -226,8 +227,20 @@ public class Rule_checks : MonoBehaviour
             rowOffset++;
         }
 
-        for(int i = 0; i < squareToCheck.Length; i++) {
-            Debug.Log("Cube cell " + i + ": " + squareToCheck[i]);
+        return (squareToCheck);
+    }
+
+    public Cell[] getSquareToEliminate(Cell originCell) {
+        Cell[] squareCells = new Cell[4];
+
+        return squareCells;
+
+        Cell[] getFourSquares(int[] startPos) {
+            Cell[] currentSquare = new Cell[4];
+
+
+
+            return currentSquare;
         }
     }
 }
