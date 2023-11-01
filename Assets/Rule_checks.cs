@@ -13,12 +13,6 @@ public class Rule_checks : MonoBehaviour
         canSwap = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void canSwapJewels(Cell cell1, Cell cell2)
     {
         Cell[] potentialSwaps = validCellSwaps(cell1);
@@ -28,6 +22,8 @@ public class Rule_checks : MonoBehaviour
                 canSwap = true;
             }
         }
+
+
     }
 
     public Cell[] validCellSwaps(Cell cell) {
@@ -90,29 +86,31 @@ public class Rule_checks : MonoBehaviour
         //getting origin jewel info
         Color originJewel = originCell.transform.GetChild(0).GetComponent<Jewel>().jewelColor;
         
+        //arrays to hold all the cells to check
         Cell[] colToCheck = new Cell[5];
         Cell[] rowToCheck = new Cell[5];
 
+        //gets the potential cells on the cols and rows that should be searched for 3s
         getColumn();
         getRow();
 
+        //unbroken streak tracks how many cells of the right color have been found in a row 
         int unbrokenStreak = 0;
-        Cell[] threeInRow = new Cell[3];
+        Cell[] threeInCol = new Cell[3];
         
-        
+        //whole loop goes through colToCheck makes sure it's not an empty square and that it contains a jewel
         for (int i = 0; i < colToCheck.Length; i++) {
            if(colToCheck[i] != null) {
                 if (colToCheck[i].GetComponentInChildren<Jewel>() != null) { 
    
                     //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
                     if (colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                        threeInRow[unbrokenStreak] = colToCheck[i];
+                        threeInCol[unbrokenStreak] = colToCheck[i];
                         
                         unbrokenStreak++;
                     } else {
                         //clears the three in row if there's a break in colors and resets the unbroken streak
-                        for (int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
-                        
+                        for (int x = 0; x < threeInCol.Length; x++) { threeInCol[x] = null; }                      
                         unbrokenStreak = 0;
                     }
                 } else { unbrokenStreak = 0;}
@@ -124,8 +122,35 @@ public class Rule_checks : MonoBehaviour
            }
         }
 
-        for(int i = 0; i < threeInRow.Length; i++) {
-            Debug.Log("Three in a row " + i + ": " + threeInRow[i]);
+        //resets unbroken streak for next four loop 
+        unbrokenStreak = 0;
+        Cell[] threeInRow = new Cell[3];
+
+        for (int i = 0; i < rowToCheck.Length; i++) {
+            if (rowToCheck[i] != null) {
+                if (rowToCheck[i].GetComponentInChildren<Jewel>() != null) {
+
+                    //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
+                    if (rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                        threeInRow[unbrokenStreak] = rowToCheck[i];
+                        unbrokenStreak++;
+                    } else {
+                        //clears the three in row if there's a break in colors and resets the unbroken streak
+                        for (int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
+                        unbrokenStreak = 0;
+                    }
+                } else { unbrokenStreak = 0; }
+            } else { unbrokenStreak = 0; }
+
+            //if the unbroken streak reaches 3 break out of the loop 
+            if (unbrokenStreak == 3) {
+                break;
+            }
+        }
+
+        for(int x = 0; x < threeInRow.Length; x++)
+        {
+            Debug.Log("Three in col " + x + ": " + threeInRow[x]);
         }
 
         void getColumn() {
@@ -139,5 +164,9 @@ public class Rule_checks : MonoBehaviour
                 rowToCheck[i] = manager.getCellAtPosition(originCell.position[0], originCell.position[1] + i - 2);
             }
         }
+    }
+
+    public void CheckSquare(Cell originCell){
+
     }
 }
