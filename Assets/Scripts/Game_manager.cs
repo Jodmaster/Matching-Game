@@ -1,4 +1,6 @@
 using System;
+using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static GridItem_interface;
@@ -106,18 +108,37 @@ public class Game_manager : MonoBehaviour
 
         //calls playerTurn on left click
         if (Input.GetMouseButtonDown(0)) {
+            
             playerTurn();
 
             if (selectedCells[0] != null) {
-                rules.CheckSquare(selectedCells[0]);
+
+                rules.getSquareToEliminate(selectedCells[0]);
+                bool hasEliminated = false;
+
+                //if we can eliminate a square get then destroy
+                if (rules.canEliminate && rules.squareElim) {
+                    
+                    //initialize array for holding square
+                    Cell[] squareToEliminate = new Cell[4];
+
+                    squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
+                    eliminateJewels(squareToEliminate);
+                    hasEliminated = true;
+
+                    rules.squareElim = false;
+
+                    for(int i = 0; i < selectedCells.Length; i++) {
+                        selectedCells[i] = null;
+                    }
+                }
                 
-                /**
                 //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
                 rules.CheckThreeInARow(selectedCells[0]);
                 Cell[] cellsToEliminate = new Cell[3];
 
                 //if found any potential eliminations get them in a array
-                if(rules.canEliminate) {
+                if(rules.canEliminate && !hasEliminated) {
                     if(rules.colElim) {
                         cellsToEliminate = rules.threeInCol;
                     } else if(rules.rowElim) {
@@ -126,12 +147,13 @@ public class Game_manager : MonoBehaviour
 
                     //then delete the jewels from the cell
                     eliminateJewels(cellsToEliminate);
+                    hasEliminated = true;
 
                     //clears selected cells so that the player can't swap afterwards
                     for(int i = 0; i < selectedCells.Length; i++) {
                         selectedCells[i] = null;
                     }
-                } **/             
+                }             
             }
 
             if (selectedCells[0] != null && selectedCells[1] != null) { 
@@ -166,6 +188,8 @@ public class Game_manager : MonoBehaviour
             Transform jewelToDestroy = cellsToElim[i].transform.GetChild (0);
             Destroy(jewelToDestroy.gameObject);
         }
+
+        rules.canEliminate = false;
     }
 
     public void playerTurn() {

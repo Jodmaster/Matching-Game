@@ -1,7 +1,6 @@
 using System.IO.IsolatedStorage;
 using Unity.Properties;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Rule_checks : MonoBehaviour
 {
@@ -96,22 +95,30 @@ public class Rule_checks : MonoBehaviour
 
     public void CheckThreeInARow(Cell originCell) {
 
-        //getting origin jewel info
-        Color originJewel = originCell.transform.GetChild(0).GetComponent<Jewel>().jewelColor;
+        Color originJewel;
+        int unbrokenStreak = 0;
 
         //arrays to hold all the cells to check
         Cell[] colToCheck = new Cell[5];
         Cell[] rowToCheck = new Cell[5];
 
-        //gets the potential cells on the cols and rows that should be searched for 3s
-        getColumn();
-        getRow();
+        //getting origin jewel info
+        if(originCell != null) {
+            if(originCell.transform.childCount == 1) {
+                if(!originCell.GetComponentInChildren<Blocker>()) {
+                    originJewel = originCell.transform.GetChild(0).GetComponent<Jewel>().jewelColor;
+                } else { originJewel = Color.black; }
+            } else { originJewel = Color.black; }
 
-        //gets the cells that should be eliminated in a col or row around the origin and puts them in cell arrays for processing 
-        int unbrokenStreak = 0;
-        threeInCol = checkCanEliminateColumn(); 
-        threeInRow = checkCanEliminateRow(); 
+            //gets the potential cells on the cols and rows that should be searched for 3s
+            getColumn();
+            getRow();
 
+            //gets the cells that should be eliminated in a col or row around the origin and puts them in cell arrays for processing 
+            threeInCol = checkCanEliminateColumn();
+            threeInRow = checkCanEliminateRow();
+        }
+            
         void getColumn() {
             for(int i = 0; i < colToCheck.Length; i++) {
                 colToCheck[i] = manager.getCellAtPosition(originCell.position[0] + i - 2, originCell.position[1]);
@@ -134,17 +141,18 @@ public class Rule_checks : MonoBehaviour
             //whole loop goes through colToCheck makes sure it's not an empty square and that it contains a jewel
             for(int i = 0; i < colToCheck.Length; i++) {
                 if(colToCheck[i] != null) {
-                    if(colToCheck[i].GetComponentInChildren<Jewel>() != null) {
+                    if(colToCheck[i].transform.childCount == 1) {
+                        if(!colToCheck[i].GetComponentInChildren<Blocker>()) {
+                            //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
+                            if(colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                                threeInCol[unbrokenStreak] = colToCheck[i];
 
-                        //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
-                        if(colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                            threeInCol[unbrokenStreak] = colToCheck[i];
-
-                            unbrokenStreak++;
-                        } else {
-                            //clears the three in row if there's a break in colors and resets the unbroken streak
-                            for(int x = 0; x < threeInCol.Length; x++) { threeInCol[x] = null; }
-                            unbrokenStreak = 0;
+                                unbrokenStreak++;
+                            } else {
+                                //clears the three in row if there's a break in colors and resets the unbroken streak
+                                for(int x = 0; x < threeInCol.Length; x++) { threeInCol[x] = null; }
+                                unbrokenStreak = 0;
+                            }
                         }
                     } else { unbrokenStreak = 0; }
                 } else { unbrokenStreak = 0; }
@@ -164,7 +172,7 @@ public class Rule_checks : MonoBehaviour
                 canEliminate = true;
                 colElim = true;
                 return threeInCol; 
-            } else { canEliminate = false; return null; }
+            } else { return null; }
         }
 
         Cell[] checkCanEliminateRow() {
@@ -175,16 +183,17 @@ public class Rule_checks : MonoBehaviour
 
             for(int i = 0; i < rowToCheck.Length; i++) {
                 if(rowToCheck[i] != null) {
-                    if(rowToCheck[i].GetComponentInChildren<Jewel>() != null) {
-
-                        //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
-                        if(rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                            threeInRow[unbrokenStreak] = rowToCheck[i];
-                            unbrokenStreak++;
-                        } else {
-                            //clears the three in row if there's a break in colors and resets the unbroken streak
-                            for(int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
-                            unbrokenStreak = 0;
+                    if(rowToCheck[i].transform.childCount == 1) {
+                        if(!rowToCheck[i].GetComponentInChildren<Blocker>()) { 
+                            //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
+                            if(rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                                threeInRow[unbrokenStreak] = rowToCheck[i];
+                                unbrokenStreak++;
+                            } else {
+                                //clears the three in row if there's a break in colors and resets the unbroken streak
+                                for(int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
+                                unbrokenStreak = 0;
+                            }
                         }
                     } else { unbrokenStreak = 0; }
                 } else { unbrokenStreak = 0; }
@@ -199,10 +208,11 @@ public class Rule_checks : MonoBehaviour
             if(!canEliminate) {
                 int threeInRowCounter = 0;
                 for(int i = 0; i < threeInRow.Length; i++) {
-                    if(threeInRow[i] != null) { threeInRowCounter++; }
+                    if(threeInRow[i] != null) { Debug.Log(threeInRow[i]); threeInRowCounter++; }
                 }
 
-                if(threeInRowCounter == 3) { canEliminate = true; } else { canEliminate = false; }
+
+                if(threeInRowCounter == 3) { canEliminate = true; } else { rowElim = false; }
             }
 
             if(canEliminate) { rowElim = true; return threeInRow; } else { return null; }
@@ -232,15 +242,55 @@ public class Rule_checks : MonoBehaviour
 
     public Cell[] getSquareToEliminate(Cell originCell) {
 
-        int[] startPoses = new int[4] {1, 2, 4, 5};
+        int[] startPoses = new int[4] {0, 1, 3, 4};
+        Color originalColor;
+
+        if(originCell.transform.childCount == 1) {
+            originalColor = originCell.GetComponentInChildren<Jewel>().jewelColor;
+        } else { return null; }
+
+        int unbrokenStreak = 0;
+        
         Cell[] cellsToCheck = CheckSquare(originCell);
         Cell[] finalsquareCells = new Cell[4]; 
 
+        //top level checking all 4 2x2 sqaure
         for(int i = 0; i < 4; i++) {
+            
+            //gets a 2x2 
             Cell[] current2by2 = getFourCells(startPoses[i]);
+
+            //checking each 2x2 to see if it's valid 
+            for(int currentJewel = 0; currentJewel < current2by2.Length; currentJewel++) {
+                Cell cellToCheck = current2by2[currentJewel];
+
+                if(cellToCheck != null) {
+                    if(cellToCheck.transform.childCount == 1 && !cellToCheck.GetComponentInChildren<Blocker>()){
+                        if(cellToCheck.GetComponentInChildren<Jewel>().jewelColor == originalColor) {
+                            finalsquareCells[currentJewel] = cellToCheck;
+                            unbrokenStreak++;
+                        }
+                    }
+                }
+            }
+
+            if(unbrokenStreak == 4) {
+                
+                canEliminate = true;
+                squareElim = true;
+                unbrokenStreak = 0;
+                break;
+            
+            } else {
+
+                squareElim = false;
+                unbrokenStreak = 0;
+            }
+
         }
 
-        return finalsquareCells;
+        if(canEliminate && squareElim) { return finalsquareCells; } else { return null; }
+        
 
         Cell[] getFourCells(int startPos) {
             
