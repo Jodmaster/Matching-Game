@@ -231,14 +231,25 @@ public class Rule_checks : MonoBehaviour
     }
 
     public Cell[] getSquareToEliminate(Cell originCell) {
-        Cell[] squareCells = new Cell[4];
 
-        return squareCells;
+        int[] startPoses = new int[4] {1, 2, 4, 5};
+        Cell[] cellsToCheck = CheckSquare(originCell);
+        Cell[] finalsquareCells = new Cell[4]; 
 
-        Cell[] getFourSquares(int[] startPos) {
+        for(int i = 0; i < 4; i++) {
+            Cell[] current2by2 = getFourCells(startPoses[i]);
+        }
+
+        return finalsquareCells;
+
+        Cell[] getFourCells(int startPos) {
+            
             Cell[] currentSquare = new Cell[4];
 
-
+            currentSquare[0] = cellsToCheck[startPos];
+            currentSquare[1] = cellsToCheck[startPos + 1];
+            currentSquare[2] = cellsToCheck[startPos + 3];
+            currentSquare[3] = cellsToCheck[startPos + 4];
 
             return currentSquare;
         }
