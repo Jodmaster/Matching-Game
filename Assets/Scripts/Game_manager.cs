@@ -111,14 +111,18 @@ public class Game_manager : MonoBehaviour
             
             playerTurn();
 
+            
             if (selectedCells[0] != null) {
 
+                selectedCells[0].GetComponentInChildren<Jewel>().checkJewelBelow();
+
+                
                 rules.getSquareToEliminate(selectedCells[0]);
                 bool hasEliminated = false;
 
                 //if we can eliminate a square get then destroy
                 if (rules.canEliminate && rules.squareElim) {
-                    
+                        
                     //initialize array for holding square
                     Cell[] squareToEliminate = new Cell[4];
 
@@ -132,7 +136,7 @@ public class Game_manager : MonoBehaviour
                         selectedCells[i] = null;
                     }
                 }
-                
+                    
                 //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
                 rules.CheckThreeInARow(selectedCells[0]);
                 Cell[] cellsToEliminate = new Cell[3];
@@ -153,10 +157,12 @@ public class Game_manager : MonoBehaviour
                     for(int i = 0; i < selectedCells.Length; i++) {
                         selectedCells[i] = null;
                     }
-                }             
+                } 
+                
             }
 
-            if (selectedCells[0] != null && selectedCells[1] != null) { 
+
+            if(selectedCells[0] != null && selectedCells[1] != null) { 
                 rules.canSwapJewels(selectedCells[0], selectedCells[1]);
             }
 

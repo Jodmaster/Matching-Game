@@ -184,7 +184,7 @@ public class Rule_checks : MonoBehaviour
             for(int i = 0; i < rowToCheck.Length; i++) {
                 if(rowToCheck[i] != null) {
                     if(rowToCheck[i].transform.childCount == 1) {
-                        if(!rowToCheck[i].GetComponentInChildren<Blocker>()) { 
+                        if(!rowToCheck[i].GetComponentInChildren<Blocker>()) {
                             //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
                             if(rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
                                 threeInRow[unbrokenStreak] = rowToCheck[i];
@@ -194,7 +194,7 @@ public class Rule_checks : MonoBehaviour
                                 for(int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
                                 unbrokenStreak = 0;
                             }
-                        }
+                        } else { unbrokenStreak = 0; }
                     } else { unbrokenStreak = 0; }
                 } else { unbrokenStreak = 0; }
 

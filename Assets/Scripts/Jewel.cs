@@ -24,4 +24,15 @@ public class Jewel : MonoBehaviour, GridItem_interface
     {
         
     }
+
+    //raycasts down to the next cell to see if it should fall down to the next cell
+    public bool checkJewelBelow() {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, LayerMask.GetMask("Jewel"));
+
+        if(hit.collider != null) {
+            Debug.Log("Collider: " + hit.collider.gameObject.name); 
+            Debug.Log("False");
+            return false;
+        } else { Debug.Log("True"); return true; }
+    }
 }

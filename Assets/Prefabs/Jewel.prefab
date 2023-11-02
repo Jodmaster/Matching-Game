@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4328988010412124347}
   - component: {fileID: 6151849143495230547}
   - component: {fileID: 1126734362254380479}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Jewel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,4 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d89b5e77bef6e304c84356749a68e3f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridItemType: 0
+  jewelColor: {r: 0, g: 0, b: 0, a: 0}
+  rend: {fileID: 0}
+  currentParent: {fileID: 0}
