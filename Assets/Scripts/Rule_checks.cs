@@ -208,7 +208,7 @@ public class Rule_checks : MonoBehaviour
             if(!canEliminate) {
                 int threeInRowCounter = 0;
                 for(int i = 0; i < threeInRow.Length; i++) {
-                    if(threeInRow[i] != null) { Debug.Log(threeInRow[i]); threeInRowCounter++; }
+                    if(threeInRow[i] != null) { threeInRowCounter++; }
                 }
 
 
