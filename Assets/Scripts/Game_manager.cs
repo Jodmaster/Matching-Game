@@ -115,6 +115,7 @@ public class Game_manager : MonoBehaviour
             if (selectedCells[0] != null) {
 
                 selectedCells[0].GetComponentInChildren<Jewel>().checkJewelBelow();
+                Debug.Log("Jewel below: " + selectedCells[0].GetComponentInChildren<Jewel>().jewelBelow);
 
                 
                 rules.getSquareToEliminate(selectedCells[0]);

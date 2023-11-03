@@ -9,10 +9,16 @@ public class Jewel : MonoBehaviour, GridItem_interface
     public Color jewelColor;
     public SpriteRenderer rend;
     public Cell currentParent;
+    
+    public bool jewelBelow;
+
+    public LayerMask jewelLayer;
 
     // Start is called before the first frame update
     void Start()
     {
+        jewelLayer = LayerMask.GetMask("Jewel");
+
         Cell currentParent = GetComponentInParent<Cell>();
         this.name = "Jewel_" + currentParent.cellNumber;
         rend = GetComponent<SpriteRenderer>();
@@ -26,13 +32,17 @@ public class Jewel : MonoBehaviour, GridItem_interface
     }
 
     //raycasts down to the next cell to see if it should fall down to the next cell
-    public bool checkJewelBelow() {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, LayerMask.GetMask("Jewel"));
+    public void checkJewelBelow() {
+        
+        //casts to cell below and sees how many colliders it hits 
+        //needs to be done as an array because the ray will hit the origin jewel 
+        RaycastHit2D[] hit = Physics2D.RaycastAll(this.transform.position, Vector2.down, 1.5f, LayerMask.GetMask("Jewel"));
 
-        if(hit.collider != null) {
-            Debug.Log("Collider: " + hit.collider.gameObject.name); 
-            Debug.Log("False");
-            return false;
-        } else { Debug.Log("True"); return true; }
+        //checks to see if there's more than one collider in the hits if yes there is a jewel below otherwise there is not 
+        if(hit.Length > 1) {
+            jewelBelow = true;
+        } else {
+            jewelBelow = false;
+        }
     }
 }
