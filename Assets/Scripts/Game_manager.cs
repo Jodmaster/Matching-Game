@@ -1,9 +1,5 @@
-using System;
-using Unity.Collections;
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static GridItem_interface;
 
 public class Game_manager : MonoBehaviour
 {
@@ -15,6 +11,10 @@ public class Game_manager : MonoBehaviour
     public Jewel jewel;
     public Blocker blocker;
 
+    //stores the jewels that report having nothing below them 
+    public List<Jewel> shouldFall = new List<Jewel> ();
+
+    //the number of rows and columns that the grid of cells will have
     [SerializeField] public int numOfCols;
     [SerializeField] public int numOfRows;
 
@@ -105,7 +105,6 @@ public class Game_manager : MonoBehaviour
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
         
-
         //calls playerTurn on left click
         if (Input.GetMouseButtonDown(0)) {
             
@@ -114,9 +113,8 @@ public class Game_manager : MonoBehaviour
             
             if (selectedCells[0] != null) {
 
-                selectedCells[0].GetComponentInChildren<Jewel>().checkJewelBelow();
-                Debug.Log("Jewel below: " + selectedCells[0].GetComponentInChildren<Jewel>().jewelBelow);
-
+                for(int i = 0; i < shouldFall.Count; i++){ Debug.Log("shouldFall num " + i + shouldFall[i]); }
+                shouldFall.Clear();
                 
                 rules.getSquareToEliminate(selectedCells[0]);
                 bool hasEliminated = false;
@@ -203,7 +201,7 @@ public class Game_manager : MonoBehaviour
         
         //raycasts where the player clicks
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit2D cellHit = Physics2D.Raycast(ray.origin, ray.direction, 1000);
+        RaycastHit2D cellHit = Physics2D.Raycast(ray.origin, ray.direction, 1000, LayerMask.GetMask("Cell"));
 
         //if there is a cell and space in the selected cells array puts it in the next empty spot
         //if the array is full it clears the array and then puts the cell in

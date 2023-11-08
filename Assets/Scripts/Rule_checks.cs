@@ -34,8 +34,6 @@ public class Rule_checks : MonoBehaviour
                 canSwap = true;
             }
         }
-
-
     }
 
     public Cell[] validCellSwaps(Cell cell) {
@@ -96,7 +94,7 @@ public class Rule_checks : MonoBehaviour
     public void CheckThreeInARow(Cell originCell) {
 
         Color originJewel;
-        int unbrokenStreak = 0;
+        int unbrokenStreak;
 
         //arrays to hold all the cells to check
         Cell[] colToCheck = new Cell[5];
@@ -153,7 +151,7 @@ public class Rule_checks : MonoBehaviour
                                 for(int x = 0; x < threeInCol.Length; x++) { threeInCol[x] = null; }
                                 unbrokenStreak = 0;
                             }
-                        }
+                        } else { unbrokenStreak = 0; }
                     } else { unbrokenStreak = 0; }
                 } else { unbrokenStreak = 0; }
 
@@ -166,13 +164,11 @@ public class Rule_checks : MonoBehaviour
             int threeInColCounter = 0;
             for(int i = 0; i < threeInCol.Length; i++) {
                 if(threeInCol[i] != null) { threeInColCounter++; }
+
+                if(threeInColCounter == 3) { canEliminate = true; } else { colElim = false; }
             }
 
-            if(threeInColCounter == 3) { 
-                canEliminate = true;
-                colElim = true;
-                return threeInCol; 
-            } else { return null; }
+            if(canEliminate) { colElim = true; return threeInCol; } else { return null; }
         }
 
         Cell[] checkCanEliminateRow() {

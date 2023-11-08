@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8548831325428388134}
   - component: {fileID: -8245986125788324908}
   - component: {fileID: 4013353921876314589}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,10 +98,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e6ec9c34fcc24243902e45fbb7b5b14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containedItem: {fileID: 0}
   bxcollider: {fileID: 4013353921876314589}
   rend: {fileID: 8548831325428388134}
   isSelected: 0
+  cellNumber: 0
+  position: 
 --- !u!61 &4013353921876314589
 BoxCollider2D:
   m_ObjectHideFlags: 0
