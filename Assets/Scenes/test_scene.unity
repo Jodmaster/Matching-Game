@@ -300,7 +300,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canSwap: 0
+  canEliminate: 0
   manager: {fileID: 143350167}
+  colElim: 0
+  rowElim: 0
+  squareElim: 0
+  threeInCol: []
+  threeInRow: []
+  sqaure: []
 --- !u!4 &404623299
 Transform:
   m_ObjectHideFlags: 0
