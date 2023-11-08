@@ -26,6 +26,7 @@ public class Jewel : MonoBehaviour, GridItem_interface {
         rend = GetComponent<SpriteRenderer>();
         if(jewelColor == Color.red) { rend.sprite = manager.redSprite; } 
         else if  (jewelColor == Color.blue) {rend.sprite =  manager.blueSprite;} 
+        else if (jewelColor == Color.green) { rend.sprite = manager.greenSprite;}
         else { rend.color = jewelColor; }
     }
 

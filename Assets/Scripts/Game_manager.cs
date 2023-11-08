@@ -25,6 +25,7 @@ public class Game_manager : MonoBehaviour
 
     public Sprite redSprite;
     public Sprite blueSprite;
+    public Sprite greenSprite;
 
     // Start is called before the first frame update
     void Start()
@@ -244,17 +245,25 @@ public class Game_manager : MonoBehaviour
     }
 
     public void jewelFall() {
+
+        for(int i = 0; i < shouldFall.Count; i++) {
+            Debug.Log(shouldFall[i]);
+        }
         
         for(int i = 0; i < shouldFall.Count; i++) {
             
             Jewel currentJewel = shouldFall[i];
             Cell currentParent = currentJewel.currentParent;
             Cell goalCell;
+
+            
             
             if(currentParent.position[0] - 1 >= 0) {
                 goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
             } else { goalCell = currentParent; }
-            
+
+            Debug.Log("goal cell is: " + goalCell.transform.name);
+
             currentJewel.transform.SetParent(goalCell.transform);
             currentJewel.currentParent = goalCell;
 
