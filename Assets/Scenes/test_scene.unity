@@ -256,6 +256,8 @@ MonoBehaviour:
   level1: {fileID: 0}
   gridInit: {fileID: 0}
   rules: {fileID: 0}
+  redSprite: {fileID: 21300000, guid: 7ef9fff5f63199e4a8120f39e44e1d03, type: 3}
+  blueSprite: {fileID: 21300000, guid: 4b596dc15b11b084faab4c3cfb4943bd, type: 3}
 --- !u!4 &143350168
 Transform:
   m_ObjectHideFlags: 0

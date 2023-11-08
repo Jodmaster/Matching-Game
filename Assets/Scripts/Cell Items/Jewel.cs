@@ -1,5 +1,6 @@
 
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static GridItem_interface;
 
@@ -23,7 +24,9 @@ public class Jewel : MonoBehaviour, GridItem_interface {
         name = "Jewel_" + currentParent.GetComponent<Cell>().cellNumber;
 
         rend = GetComponent<SpriteRenderer>();
-        rend.color = jewelColor;
+        if(jewelColor == Color.red) { rend.sprite = manager.redSprite; } 
+        else if  (jewelColor == Color.blue) {rend.sprite =  manager.blueSprite;} 
+        else { rend.color = jewelColor; }
     }
 
     // Update is called once per frame

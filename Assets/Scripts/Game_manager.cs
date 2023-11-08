@@ -23,6 +23,9 @@ public class Game_manager : MonoBehaviour
     public Initialize_Grid gridInit;
     public Rule_checks rules;
 
+    public Sprite redSprite;
+    public Sprite blueSprite;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -247,16 +250,11 @@ public class Game_manager : MonoBehaviour
             Jewel currentJewel = shouldFall[i];
             Cell currentParent = currentJewel.currentParent;
             Cell goalCell;
-
-            Debug.Log("og row: " + currentParent.position[0]);
-
+            
             if(currentParent.position[0] - 1 >= 0) {
                 goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
             } else { goalCell = currentParent; }
-
-            Debug.Log("goal row: " + goalCell.position[0]);
-            Debug.Log(currentJewel.transform.name + "is going to" + goalCell.transform.name);
-
+            
             currentJewel.transform.SetParent(goalCell.transform);
             currentJewel.currentParent = goalCell;
 
