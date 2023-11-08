@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Game_manager : MonoBehaviour
@@ -25,7 +26,7 @@ public class Game_manager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        cells = new Cell[numOfCols, numOfRows];
+        cells = new Cell[numOfRows, numOfCols];
         GameSetup();
 
     }
@@ -104,18 +105,15 @@ public class Game_manager : MonoBehaviour
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
-        
+        if(shouldFall.Count > 0) { jewelFall(); }
+
         //calls playerTurn on left click
         if (Input.GetMouseButtonDown(0)) {
             
             playerTurn();
-
             
             if (selectedCells[0] != null) {
-
-                for(int i = 0; i < shouldFall.Count; i++){ Debug.Log("shouldFall num " + i + shouldFall[i]); }
-                shouldFall.Clear();
-                
+                                              
                 rules.getSquareToEliminate(selectedCells[0]);
                 bool hasEliminated = false;
 
@@ -150,7 +148,7 @@ public class Game_manager : MonoBehaviour
 
                     //then delete the jewels from the cell
                     eliminateJewels(cellsToEliminate);
-                    hasEliminated = true;
+                    hasEliminated = true;     
 
                     //clears selected cells so that the player can't swap afterwards
                     for(int i = 0; i < selectedCells.Length; i++) {
@@ -240,5 +238,33 @@ public class Game_manager : MonoBehaviour
         }
         
         return null;
+    }
+
+    public void jewelFall() {
+        
+        for(int i = 0; i < shouldFall.Count; i++) {
+            
+            Jewel currentJewel = shouldFall[i];
+            Cell currentParent = currentJewel.currentParent;
+            Cell goalCell;
+
+            Debug.Log("og row: " + currentParent.position[0]);
+
+            if(currentParent.position[0] - 1 >= 0) {
+                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
+            } else { goalCell = currentParent; }
+
+            Debug.Log("goal row: " + goalCell.position[0]);
+            Debug.Log(currentJewel.transform.name + "is going to" + goalCell.transform.name);
+
+            currentJewel.transform.SetParent(goalCell.transform);
+            currentJewel.currentParent = goalCell;
+
+            Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
+            currentJewel.transform.position = posToChangeTo;
+                            
+        }
+
+        shouldFall.Clear();
     }
 }

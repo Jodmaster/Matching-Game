@@ -19,13 +19,11 @@ public class Jewel : MonoBehaviour, GridItem_interface {
         jewelLayer = LayerMask.GetMask("Jewel");
         manager = FindObjectOfType<Game_manager>();
 
-        Cell currentParent = GetComponentInParent<Cell>();
-        this.name = "Jewel_" + currentParent.cellNumber;
+        currentParent = transform.parent.gameObject.GetComponent<Cell>();
+        name = "Jewel_" + currentParent.GetComponent<Cell>().cellNumber;
 
         rend = GetComponent<SpriteRenderer>();
         rend.color = jewelColor;
-
-
     }
 
     // Update is called once per frame
@@ -44,7 +42,6 @@ public class Jewel : MonoBehaviour, GridItem_interface {
         //needs to be done as an array because the ray will hit the origin jewel 
         RaycastHit2D jewel_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f, LayerMask.GetMask("Jewel"));
         RaycastHit2D block_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f, LayerMask.GetMask("Blocker"));
-        RaycastHit2D floor_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f, 7);
 
         Debug.DrawRay(transform.position - originOffset, Vector2.down, Color.red);
 
