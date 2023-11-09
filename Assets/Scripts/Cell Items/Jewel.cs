@@ -23,6 +23,7 @@ public class Jewel : MonoBehaviour, GridItem_interface {
         currentParent = transform.parent.gameObject.GetComponent<Cell>();
         name = "Jewel_" + currentParent.GetComponent<Cell>().cellNumber;
 
+        //sets sprite based on jewel color
         rend = GetComponent<SpriteRenderer>();
         if(jewelColor == Color.red) { rend.sprite = manager.redSprite; } 
         else if  (jewelColor == Color.blue) {rend.sprite =  manager.blueSprite;} 
@@ -32,6 +33,7 @@ public class Jewel : MonoBehaviour, GridItem_interface {
 
     // Update is called once per frame
     void Update() {
+        //checks if the jewel should fall and if it's already in the shouldfall array
         if(checkJewelBelow() && !manager.shouldFall.Contains(this)) {
             manager.shouldFall.Add(this);
         }
@@ -49,6 +51,7 @@ public class Jewel : MonoBehaviour, GridItem_interface {
 
         Debug.DrawRay(transform.position - originOffset, Vector2.down, Color.red);
 
+        //if below it doesn't contain a blocker or jewel it should fall
         if(!block_check){     
             if(!jewel_check){
                 return true;

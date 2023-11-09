@@ -109,6 +109,7 @@ public class Game_manager : MonoBehaviour
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
+        //if jewels should fall make them fall before the player turn
         if(shouldFall.Count > 0) { jewelFall(); }
 
         //calls playerTurn on left click
@@ -182,9 +183,11 @@ public class Game_manager : MonoBehaviour
         if (cellItem1.GetComponent<Jewel>() != null && cellItem2.GetComponent<Jewel>() != null) { 
             //changes parents of the jewel and then updates the transform
             cellItem1.SetParent(selectedCells[1].transform);
+            cellItem1.GetComponent<Jewel>().currentParent = selectedCells[1]; 
             cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
 
             cellItem2.SetParent(selectedCells[0].transform);
+            cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
             cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
         }
     }
@@ -245,33 +248,26 @@ public class Game_manager : MonoBehaviour
     }
 
     public void jewelFall() {
-
-        for(int i = 0; i < shouldFall.Count; i++) {
-            Debug.Log(shouldFall[i]);
-        }
         
         for(int i = 0; i < shouldFall.Count; i++) {
             
             Jewel currentJewel = shouldFall[i];
             Cell currentParent = currentJewel.currentParent;
             Cell goalCell;
-
             
-            
-            if(currentParent.position[0] - 1 >= 0) {
-                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-            } else { goalCell = currentParent; }
+            goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
 
-            Debug.Log("goal cell is: " + goalCell.transform.name);
+            Debug.Log("Current parent is " + currentParent.name + " and goal cell is " + goalCell.name);
 
             currentJewel.transform.SetParent(goalCell.transform);
             currentJewel.currentParent = goalCell;
 
             Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
             currentJewel.transform.position = posToChangeTo;
-                            
+
+            shouldFall.Remove(currentJewel);
         }
 
-        shouldFall.Clear();
+        
     }
 }

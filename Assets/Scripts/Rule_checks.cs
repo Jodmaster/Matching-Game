@@ -271,14 +271,11 @@ public class Rule_checks : MonoBehaviour
             }
 
             if(unbrokenStreak == 4) {
-                
                 canEliminate = true;
                 squareElim = true;
-                unbrokenStreak = 0;
                 break;
             
-            } else {
-
+            } else { 
                 squareElim = false;
                 unbrokenStreak = 0;
             }
