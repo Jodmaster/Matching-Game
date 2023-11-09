@@ -11,6 +11,7 @@ public class Game_manager : MonoBehaviour
 
     public Jewel jewel;
     public Blocker blocker;
+    public Sand sand;
 
     //stores the jewels that report having nothing below them 
     public List<Jewel> shouldFall = new List<Jewel> ();
@@ -81,6 +82,9 @@ public class Game_manager : MonoBehaviour
                     
                     case 1:
                         cellToSet.setContainedItem(blocker);
+                        break;
+                    case 2:
+                        cellToSet.setContainedItem(sand);
                         break;
                 }
                 cellCounter++;
@@ -250,7 +254,9 @@ public class Game_manager : MonoBehaviour
     public void jewelFall() {
         
         for(int i = 0; i < shouldFall.Count; i++) {
-            
+
+            Debug.Log(shouldFall[i]);
+
             Jewel currentJewel = shouldFall[i];
             Cell currentParent = currentJewel.currentParent;
             Cell goalCell;

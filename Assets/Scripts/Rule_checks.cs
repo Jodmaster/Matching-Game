@@ -103,7 +103,7 @@ public class Rule_checks : MonoBehaviour
         //getting origin jewel info
         if(originCell != null) {
             if(originCell.transform.childCount == 1) {
-                if(!originCell.GetComponentInChildren<Blocker>()) {
+                if(!originCell.GetComponentInChildren<Blocker>() && !originCell.GetComponentInChildren<Sand>()) {
                     originJewel = originCell.transform.GetChild(0).GetComponent<Jewel>().jewelColor;
                 } else { originJewel = Color.black; }
             } else { originJewel = Color.black; }
@@ -140,7 +140,7 @@ public class Rule_checks : MonoBehaviour
             for(int i = 0; i < colToCheck.Length; i++) {
                 if(colToCheck[i] != null) {
                     if(colToCheck[i].transform.childCount == 1) {
-                        if(!colToCheck[i].GetComponentInChildren<Blocker>()) {
+                        if(!colToCheck[i].GetComponentInChildren<Blocker>() && !colToCheck[i].GetComponentInChildren<Sand>()) {
                             //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
                             if(colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
                                 threeInCol[unbrokenStreak] = colToCheck[i];
@@ -180,7 +180,7 @@ public class Rule_checks : MonoBehaviour
             for(int i = 0; i < rowToCheck.Length; i++) {
                 if(rowToCheck[i] != null) {
                     if(rowToCheck[i].transform.childCount == 1) {
-                        if(!rowToCheck[i].GetComponentInChildren<Blocker>()) {
+                        if(!rowToCheck[i].GetComponentInChildren<Blocker>() && !rowToCheck[i].GetComponentInChildren<Sand>()) {
                             //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
                             if(rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
                                 threeInRow[unbrokenStreak] = rowToCheck[i];
@@ -242,7 +242,9 @@ public class Rule_checks : MonoBehaviour
         Color originalColor;
 
         if(originCell.transform.childCount == 1) {
-            originalColor = originCell.GetComponentInChildren<Jewel>().jewelColor;
+            if (originCell.GetComponentInChildren<Jewel>() != null) {
+                originalColor = originCell.GetComponentInChildren<Jewel>().jewelColor;
+            } else { return null; }
         } else { return null; }
 
         int unbrokenStreak = 0;
@@ -261,7 +263,7 @@ public class Rule_checks : MonoBehaviour
                 Cell cellToCheck = current2by2[currentJewel];
 
                 if(cellToCheck != null) {
-                    if(cellToCheck.transform.childCount == 1 && !cellToCheck.GetComponentInChildren<Blocker>()){
+                    if(cellToCheck.transform.childCount == 1 && !cellToCheck.GetComponentInChildren<Blocker>() && !cellToCheck.GetComponentInChildren<Sand>()){
                         if(cellToCheck.GetComponentInChildren<Jewel>().jewelColor == originalColor) {
                             finalsquareCells[currentJewel] = cellToCheck;
                             unbrokenStreak++;

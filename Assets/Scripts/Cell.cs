@@ -47,7 +47,7 @@ public class Cell : MonoBehaviour
             } else if (item.itemType == gridItemType.Blocker){
                 containedItem = Instantiate((Blocker)item, spawnPos, transform.rotation, transform);
             } else if (item.itemType == gridItemType.Sand){
-                //TODO implement sand class
+                containedItem = Instantiate((Sand)item, spawnPos, transform.rotation, transform);
             }                                                    
         }
     }

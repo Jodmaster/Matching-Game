@@ -250,6 +250,7 @@ MonoBehaviour:
   - {fileID: 0}
   jewel: {fileID: 1126734362254380479, guid: e191270395b5a7d48bd9e155f4794256, type: 3}
   blocker: {fileID: -7644823027127397565, guid: c02208b5f6d5110489ae329975efd81f, type: 3}
+  sand: {fileID: 4965658099007274184, guid: 1488c50a58a8ec34990d708232746006, type: 3}
   shouldFall: []
   numOfCols: 6
   numOfRows: 6

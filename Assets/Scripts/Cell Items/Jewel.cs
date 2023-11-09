@@ -46,17 +46,13 @@ public class Jewel : MonoBehaviour, GridItem_interface {
 
         //casts to cell below and sees how many colliders it hits 
         //needs to be done as an array because the ray will hit the origin jewel 
-        RaycastHit2D jewel_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f, LayerMask.GetMask("Jewel"));
-        RaycastHit2D block_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f, LayerMask.GetMask("Blocker"));
-
+        RaycastHit2D item_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f);
+        
         Debug.DrawRay(transform.position - originOffset, Vector2.down, Color.red);
 
         //if below it doesn't contain a blocker or jewel it should fall
-        if(!block_check){     
-            if(!jewel_check){
-                return true;
-            } else { return false; }
-        } else { return false; }
+        if (!item_check) { return true; } 
+        else { return false; }
     }
       
 }
