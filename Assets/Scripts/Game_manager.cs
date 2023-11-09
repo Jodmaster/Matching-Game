@@ -15,6 +15,7 @@ public class Game_manager : MonoBehaviour
 
     //stores the jewels that report having nothing below them 
     public List<Jewel> shouldFall = new List<Jewel> ();
+    public List<Sand> sandToFall = new List<Sand> ();
 
     //the number of rows and columns that the grid of cells will have
     [SerializeField] public int numOfCols;
@@ -112,6 +113,8 @@ public class Game_manager : MonoBehaviour
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
+
+        if (sandToFall.Count > 0) { sandFall(); }
 
         //if jewels should fall make them fall before the player turn
         if(shouldFall.Count > 0) { jewelFall(); }
@@ -255,15 +258,11 @@ public class Game_manager : MonoBehaviour
         
         for(int i = 0; i < shouldFall.Count; i++) {
 
-            Debug.Log(shouldFall[i]);
-
             Jewel currentJewel = shouldFall[i];
             Cell currentParent = currentJewel.currentParent;
             Cell goalCell;
             
             goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-
-            Debug.Log("Current parent is " + currentParent.name + " and goal cell is " + goalCell.name);
 
             currentJewel.transform.SetParent(goalCell.transform);
             currentJewel.currentParent = goalCell;
@@ -275,5 +274,35 @@ public class Game_manager : MonoBehaviour
         }
 
         
+    }
+
+    public void sandFall() {
+        
+        for(int i = 0; i < sandToFall.Count; i++) {
+
+            Sand currentSand = sandToFall[i];
+            Cell currentParent = currentSand.currentParent;
+            Cell goalCell;
+
+            if (currentSand.fallDown) {
+                goalCell = getCellAtPosition(currentParent.position[0] - 1, (currentParent.position[1]));
+            } else if (currentSand.fallLeft) {
+                goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1] - 1);
+            } else if (currentSand.fallRight) {
+                goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1] + 1);
+            } else {
+                goalCell = null;
+            }
+
+            if (goalCell != null) {
+                currentSand.transform.SetParent(goalCell.transform);
+                currentSand.currentParent = goalCell;
+
+                Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
+                currentSand.transform.position = posToChangeTo;
+            }
+
+            sandToFall.Remove(currentSand);
+        }
     }
 }
