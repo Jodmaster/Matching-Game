@@ -117,6 +117,7 @@ public class Game_manager : MonoBehaviour
         if (sandToFall.Count > 0) { sandFall(); }
 
         //if jewels should fall make them fall before the player turn
+        Debug.Log(shouldFall.Count);
         if(shouldFall.Count > 0) { jewelFall(); }
 
         //calls playerTurn on left click
@@ -272,8 +273,7 @@ public class Game_manager : MonoBehaviour
 
             shouldFall.Remove(currentJewel);
         }
-
-        
+     
     }
 
     public void sandFall() {
@@ -282,7 +282,7 @@ public class Game_manager : MonoBehaviour
 
             Sand currentSand = sandToFall[i];
             Cell currentParent = currentSand.currentParent;
-            Cell goalCell;
+            Cell goalCell = currentParent;
 
             if (currentSand.fallDown) {
                 goalCell = getCellAtPosition(currentParent.position[0] - 1, (currentParent.position[1]));
@@ -294,13 +294,13 @@ public class Game_manager : MonoBehaviour
                 goalCell = null;
             }
 
-            if (goalCell != null) {
-                currentSand.transform.SetParent(goalCell.transform);
-                currentSand.currentParent = goalCell;
+            
+            currentSand.transform.SetParent(goalCell.transform);
+            currentSand.currentParent = goalCell;
 
-                Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
-                currentSand.transform.position = posToChangeTo;
-            }
+            Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
+            currentSand.transform.position = posToChangeTo;
+            
 
             sandToFall.Remove(currentSand);
         }

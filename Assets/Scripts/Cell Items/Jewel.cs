@@ -25,6 +25,7 @@ public class Jewel : MonoBehaviour, GridItem_interface {
 
         //sets sprite based on jewel color
         rend = GetComponent<SpriteRenderer>();
+        
         if(jewelColor == Color.red) { rend.sprite = manager.redSprite; } 
         else if  (jewelColor == Color.blue) {rend.sprite =  manager.blueSprite;} 
         else if (jewelColor == Color.green) { rend.sprite = manager.greenSprite;}
@@ -46,10 +47,12 @@ public class Jewel : MonoBehaviour, GridItem_interface {
 
         //casts to cell below and sees how many colliders it hits 
         //needs to be done as an array because the ray will hit the origin jewel 
-        RaycastHit2D item_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f);
+        RaycastHit2D jewel_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f, LayerMask.GetMask("Jewel"));
+        RaycastHit2D sand_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 5f, LayerMask.GetMask("Sand"));
+        RaycastHit2D block_check = Physics2D.Raycast(transform.position - originOffset, Vector2.down, 0.5f, LayerMask.GetMask("Blocker"));
 
         //if below it doesn't contain a blocker or jewel it should fall
-        if (!item_check) { return true; } 
+        if (!jewel_check && !sand_check && !block_check) { return true; } 
         else { return false; }
     }
       

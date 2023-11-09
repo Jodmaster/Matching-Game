@@ -35,7 +35,6 @@ public class Cell : MonoBehaviour
         //Position to spawn item in cell just for off setting the z value to put it infront of the cell
         Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, -0.1f);
 
-
         //spawns the container item at the origin of the cell and then makes it its child
         checkWhichItemToSpawn(item);
 

@@ -1,4 +1,5 @@
 
+using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 using static GridItem_interface;
 
@@ -8,6 +9,7 @@ public class Sand : MonoBehaviour, GridItem_interface
 
     public Cell currentParent;
     Game_manager manager;
+    LayerMask layer;
 
     public bool fallLeft;
     public bool fallRight;
@@ -16,6 +18,7 @@ public class Sand : MonoBehaviour, GridItem_interface
     // Start is called before the first frame update
     void Start()
     {
+        layer = LayerMask.NameToLayer("Sand");
         currentParent = transform.parent.gameObject.GetComponent<Cell>();
         manager = FindObjectOfType<Game_manager>();
     }
@@ -23,42 +26,75 @@ public class Sand : MonoBehaviour, GridItem_interface
     // Update is called once per frame
     void Update()
     {
+        
         if(shouldFall() && !manager.sandToFall.Contains(this)) {
             manager.sandToFall.Add(this);
         }
+        
     }
 
+    
     public bool shouldFall() {
         
-        Vector3 sideOffset = new Vector3(2f, 0, 0);
+        Vector3 sideOffset = new Vector3(2, 0, 0);
         Vector3 downOffset = new Vector3(0, 1, 0);
+        Vector3 diagonalOffset = new Vector3(1.5f, 0, 0);
 
-        RaycastHit2D right = Physics2D.Raycast(transform.position + sideOffset, Vector2.left, 1.5f);
-        RaycastHit2D left = Physics2D.Raycast(transform.position - sideOffset, Vector2.right, 1.5f);
-        RaycastHit2D down = Physics2D.Raycast(transform.position - downOffset, Vector2.down, 1.5f);
+        LayerMask[] masks = new LayerMask[3] { LayerMask.GetMask("Jewel"), LayerMask.GetMask("Blocker"), LayerMask.GetMask("Sand") };
 
-        Debug.DrawRay(transform.position + sideOffset, Vector2.left, Color.red);
-        Debug.DrawRay(transform.position - sideOffset, Vector2.right, Color.blue);
-        Debug.DrawRay(transform.position - downOffset, Vector2.down, Color.green);
+        for(int i = 0; i < masks.Length; i++) { Debug.Log("Mask is: " + LayerMask.LayerToName(masks[i])); }
 
-        if (!down) { fallDown = true; return true; }
-
-        if (!left) {
-            RaycastHit2D checkDown = Physics2D.Raycast(transform.position - sideOffset - downOffset, Vector2.down, 1.5f);
-            if (!checkDown) {
-                fallLeft = true;
-                return true;
-            }
+        //down check 
+        for(int i = 0; i < masks.Length; i++) {
+            RaycastHit2D down = Physics2D.Raycast(transform.position - downOffset, Vector2.down, 1.5f, masks[i]);
+            if(down) { fallDown = false; } else if (i == masks.Length - 1 && !down) { fallDown = true; }
         }
 
-        if (!right) {
-            RaycastHit2D checkDown = Physics2D.Raycast(transform.position - sideOffset - downOffset, Vector2.down, 1.5f);
-            if (!checkDown) {
-                fallRight = true;
-                return true;
-            }
+        //left check 
+        for(int i = 0; i < masks.Length; i++) {
+            
+            RaycastHit2D left = Physics2D.Raycast(transform.position - sideOffset, Vector2.left, 1.5f, masks[i]);
+
+            if(!left) {
+
+                RaycastHit2D down = Physics2D.Raycast(transform.position - downOffset - diagonalOffset, Vector2.down, 1.5f, masks[i]);
+
+                if(down) {
+                    fallLeft = false;
+                } else {
+                    fallLeft = true;
+                }
+
+            } else { fallLeft = false; }
+
+        }
+
+        //right
+        for(int i = 0; i < masks.Length; i++) {
+
+            RaycastHit2D right = Physics2D.Raycast(transform.position + sideOffset, Vector2.right, 1.5f, masks[i]);
+
+            if(!right) {
+
+                RaycastHit2D down = Physics2D.Raycast(transform.position - downOffset + diagonalOffset, Vector2.down, 1.5f, masks[i]);
+
+                if(down) {
+                    fallRight = false;
+                } else {
+                    fallRight = true;
+                }
+
+            } else { fallRight = false; }
+
+        }
+
+
+        if(fallLeft || fallRight || fallDown) {
+            Debug.Log("fallLeft " + fallLeft.ToString() + " fallright " + fallRight.ToString() + " fallDown " + fallDown.ToString());
+            return true;
         }
 
         return false;
     }
+    
 }
