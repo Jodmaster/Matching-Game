@@ -114,11 +114,11 @@ public class Game_manager : MonoBehaviour
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
-        if (sandToFall.Count > 0) { sandFall(); }
-
         //if jewels should fall make them fall before the player turn
-        Debug.Log(shouldFall.Count);
-        if(shouldFall.Count > 0) { jewelFall(); }
+
+        if (sandToFall.Count > 0) { sandFall(); }
+        if (shouldFall.Count > 0) { jewelFall(); }
+        
 
         //calls playerTurn on left click
         if (Input.GetMouseButtonDown(0)) {
@@ -282,27 +282,31 @@ public class Game_manager : MonoBehaviour
 
             Sand currentSand = sandToFall[i];
             Cell currentParent = currentSand.currentParent;
-            Cell goalCell = currentParent;
+            Cell goalCell;
 
             if (currentSand.fallDown) {
-                goalCell = getCellAtPosition(currentParent.position[0] - 1, (currentParent.position[1]));
+                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
+                if (goalCell) { SetParentAndTransform(currentSand, goalCell); }     
             } else if (currentSand.fallLeft) {
-                goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1] - 1);
+                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] - 1));
+                if (goalCell) { SetParentAndTransform(currentSand, goalCell); }
             } else if (currentSand.fallRight) {
-                goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1] + 1);
-            } else {
-                goalCell = null;
+                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] + 1));
+                if (goalCell) { SetParentAndTransform(currentSand, goalCell); }
             }
+                                  
+        }
 
+        void SetParentAndTransform(Sand currentSand, Cell goalCell) {
             
             currentSand.transform.SetParent(goalCell.transform);
             currentSand.currentParent = goalCell;
 
             Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
             currentSand.transform.position = posToChangeTo;
-            
 
             sandToFall.Remove(currentSand);
+        
         }
     }
 }

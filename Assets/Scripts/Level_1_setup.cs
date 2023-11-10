@@ -12,12 +12,12 @@ public class Level_1_setup : MonoBehaviour
         //1 is blocker
         //2 is sand
         itemToContain = new int[6, 6] {
-            {0,0,0,0,0,0},
-            {0,0,0,1,0,0},
+            {0,2,2,2,0,0},
+            {0,0,2,1,0,0},
             {0,0,1,0,0,0},
-            {0,0,0,1,0,0},
+            {0,0,0,1,2,0},
             {0,2,0,0,0,0},
-            {0,0,0,0,0,0}
+            {0,2,0,0,0,0}
         };
 
         //controls gem color
