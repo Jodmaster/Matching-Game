@@ -109,6 +109,11 @@ public class Game_manager : MonoBehaviour
     }
 
     public void FixedUpdate() {
+        /**
+         * having these methods in update lead to what i think are clashes where both a jewel 
+         * and sand simultaneously go into the same cell because they both think it's empty moving these into
+         * fixed update seems to have spaced the calculations out enough that these clashes don't happen
+        */
         if(sandToFall.Count > 0) { sandFall(); }
         if(shouldFall.Count > 0) { jewelFall(); }
     }
@@ -256,6 +261,7 @@ public class Game_manager : MonoBehaviour
 
     public void jewelFall() {
         
+        //loops through the should fall array getting the new parent and adjusting to the right transform
         for(int i = 0; i < shouldFall.Count; i++) {
 
             Jewel currentJewel = shouldFall[i];
@@ -277,6 +283,7 @@ public class Game_manager : MonoBehaviour
 
     public void sandFall() {
         
+        //loops through the sand to fall array checks which direction it should fall and then updates parent and transform 
         for(int i = 0; i < sandToFall.Count; i++) {
 
             Sand currentSand = sandToFall[i];
@@ -296,6 +303,7 @@ public class Game_manager : MonoBehaviour
                                   
         }
 
+        //helper method that sets new parent and transform
         void SetParentAndTransform(Sand currentSand, Cell goalCell) {
             
             currentSand.transform.SetParent(goalCell.transform);
