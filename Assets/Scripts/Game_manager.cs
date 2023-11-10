@@ -108,17 +108,16 @@ public class Game_manager : MonoBehaviour
         
     }
 
+    public void FixedUpdate() {
+        if(sandToFall.Count > 0) { sandFall(); }
+        if(shouldFall.Count > 0) { jewelFall(); }
+    }
+
     public void Update()
     {
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
-
-        //if jewels should fall make them fall before the player turn
-
-        if (sandToFall.Count > 0) { sandFall(); }
-        if (shouldFall.Count > 0) { jewelFall(); }
-        
 
         //calls playerTurn on left click
         if (Input.GetMouseButtonDown(0)) {

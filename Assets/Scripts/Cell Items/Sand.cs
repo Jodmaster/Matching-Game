@@ -1,4 +1,6 @@
 
+using JetBrains.Annotations;
+using UnityEditor;
 using UnityEditor.ShaderKeywordFilter;
 using UnityEngine;
 using static GridItem_interface;
@@ -20,73 +22,45 @@ public class Sand : MonoBehaviour, GridItem_interface
     {
         layer = LayerMask.NameToLayer("Sand");
         currentParent = transform.parent.gameObject.GetComponent<Cell>();
-        
+        name = "sand_" + currentParent.cellNumber;
+
         manager = FindObjectOfType<Game_manager>();
     }
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {       
         if(shouldFall() && !manager.sandToFall.Contains(this)) { 
             manager.sandToFall.Add(this);
         }
         
     }
 
-    
+
     public bool shouldFall() {
-        
-        Vector3 sideOffset = new Vector3(1, 0, 0);
+
         Vector3 downOffset = new Vector3(0, 1, 0);
         Vector3 diagonalOffset = new Vector3(1.5f, 0, 0);
 
-        int[] layermaskValues = new int[] { 3, 6, 8 };
+        Debug.DrawRay(transform.position + diagonalOffset, Vector2.down * 2, Color.yellow);
 
-        LayerMask[] masks = {LayerMask.NameToLayer("Sand"), LayerMask.NameToLayer("Blocker"), LayerMask.NameToLayer("Jewel") };
+        RaycastHit2D leftJewelCheck = Physics2D.Raycast(transform.position - diagonalOffset, Vector2.down, 2f, LayerMask.GetMask("Jewel"));
+        RaycastHit2D rightJewelCheck = Physics2D.Raycast(transform.position + diagonalOffset, Vector2.down, 2f, LayerMask.GetMask("Jewel"));
+        RaycastHit2D downJewelCheck = Physics2D.Raycast(transform.position - downOffset, Vector2.down, 1f, LayerMask.GetMask("Jewel"));
 
-        Debug.DrawRay(transform.position + sideOffset, Vector2.right, Color.red);
-        Debug.DrawRay(transform.position - sideOffset, Vector2.left, Color.red);
-        Debug.DrawRay(transform.position - downOffset, Vector2.down, Color.blue);
-        Debug.DrawRay(transform.position - downOffset + diagonalOffset, Vector2.down, Color.black);
-        Debug.DrawRay(transform.position - downOffset - diagonalOffset, Vector2.down, Color.black);
+        RaycastHit2D leftSandCheck = Physics2D.Raycast(transform.position - diagonalOffset, Vector2.down, 2f, LayerMask.GetMask("Sand"));
+        RaycastHit2D rightSandCheck = Physics2D.Raycast(transform.position + diagonalOffset, Vector2.down, 2f, LayerMask.GetMask("Sand"));
+        RaycastHit2D downSandCheck = Physics2D.Raycast(transform.position - downOffset, Vector2.down, 1f, LayerMask.GetMask("Sand"));
 
-        
-        //down check 
-        for (int i = 0; i < masks.Length; i++) {
-            RaycastHit2D down = Physics2D.Raycast(transform.position - downOffset, Vector2.down, 1.5f, masks[i]);
-            if (down) { fallDown = false ; break; } else { fallDown = true; }
-        }
+        RaycastHit2D leftBlockerCheck = Physics2D.Raycast(transform.position - diagonalOffset, Vector2.down, 2f, LayerMask.GetMask("Blocker"));
+        RaycastHit2D rightBlockerCheck = Physics2D.Raycast(transform.position + diagonalOffset, Vector2.down, 2f, LayerMask.GetMask("Blocker"));
+        RaycastHit2D downBlockerCheck = Physics2D.Raycast(transform.position - downOffset, Vector2.down, 1f, LayerMask.GetMask("Blocker"));
 
-        //right
-        for (int i = 0; i < masks.Length; i++) {
+        if(!downSandCheck && !downJewelCheck && !downBlockerCheck) { fallDown = true; } else { fallDown = false; }
+        if(!rightSandCheck && !rightJewelCheck && !rightBlockerCheck) { fallRight = true; } else { fallRight = false; }
+        if(!leftSandCheck && !leftJewelCheck && !leftBlockerCheck) { fallLeft = true; } else { fallLeft = false; }
 
-            RaycastHit2D right = Physics2D.Raycast(transform.position + sideOffset, Vector2.right, 1.5f, masks[i]);
+        if(fallDown || fallRight || fallLeft) { return true; } else { return false; }
 
-            if (right) {fallRight = false; break; } else {
-                RaycastHit2D down = Physics2D.Raycast(transform.position - downOffset + diagonalOffset, Vector2.down, 1.5f, masks[i]);
-                if (down) { fallRight = false; break; } else { fallRight = true; }
-            }
-        }
-
-        //left check 
-        for (int i = 0; i < masks.Length; i++) {
-            
-            RaycastHit2D left = Physics2D.Raycast(transform.position - sideOffset, Vector2.left, 1.5f, masks[i]);
-
-            if(left) { fallLeft = false; break; } else {
-                RaycastHit2D down = Physics2D.Raycast(transform.position - downOffset - diagonalOffset, Vector2.down, 1.5f, masks[i]);
-                if (down) { fallLeft = false; break; } else { fallLeft = true; }
-            }
-        }
-
-        
-        if(fallLeft || fallRight || fallDown) {
-            Debug.Log("Sand" + name + "fallLeft: " + fallLeft.ToString() + ", fallright: " + fallRight.ToString() + ", fallDown: " + fallDown.ToString());
-            return true;
-        }
-
-        return false;
     }
-    
 }
