@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Game_manager : MonoBehaviour
 {
     public int turnCounter;
+    public int currentTurn;
 
     public Cell[,] cells;
     public Cell[] selectedCells;
@@ -35,6 +35,7 @@ public class Game_manager : MonoBehaviour
         cells = new Cell[numOfRows, numOfCols];
         GameSetup();
 
+        turnCounter = 5;
     }
 
     private void GameSetup()
@@ -116,6 +117,8 @@ public class Game_manager : MonoBehaviour
         */
         if(sandToFall.Count > 0) { sandFall(); }
         if(shouldFall.Count > 0) { jewelFall(); }
+
+        if(currentTurn <= 0) { }
     }
 
     public void Update()
@@ -155,7 +158,7 @@ public class Game_manager : MonoBehaviour
                 rules.CheckThreeInARow(selectedCells[0]);
                 Cell[] cellsToEliminate = new Cell[3];
 
-                //if found any potential eliminations get them in a array
+                //if we can eliminate a row or a column get then destroy
                 if(rules.canEliminate && !hasEliminated) {
                     if(rules.colElim) {
                         cellsToEliminate = rules.threeInCol;
@@ -202,6 +205,8 @@ public class Game_manager : MonoBehaviour
             cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
             cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
         }
+
+        turnCounter--;
     }
 
     public void eliminateJewels(Cell[] cellsToElim) {

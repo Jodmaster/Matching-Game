@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static GridItem_interface;
 
-public class Cell : MonoBehaviour
+public class Cell : MonoBehaviour, IDropHandler 
 {
     public GridItem_interface containedItem;
     public BoxCollider2D bxcollider;
@@ -55,5 +56,7 @@ public class Cell : MonoBehaviour
 
     public void setCellNumber(int cellNum) { this.cellNumber = cellNum;}
 
-   
+    public void OnDrop(PointerEventData eventData) {
+        throw new NotImplementedException();
+    }
 }
