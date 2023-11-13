@@ -3,35 +3,46 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Bomb : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
+public class Bomb : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    Game_manager manager;
+
+    private Canvas canvas;
+    private RectTransform rectTrans;
+    private CanvasGroup group;
+
+    void Start() {
+        canvas = FindObjectOfType<Canvas>();
+        group = GetComponent<CanvasGroup>();
+        rectTrans = GetComponent<RectTransform>();
+    }
+
 
     public void OnBeginDrag(PointerEventData eventData) {
-        throw new System.NotImplementedException();
+        group.alpha = 0.5f;
+        group.blocksRaycasts = false;
     }
 
     public void OnDrag(PointerEventData eventData) {
-        throw new System.NotImplementedException();
+        //gets current mouse pos and then sets the bomb to that position accounting for the scale factor of the canvas
+        Vector3 currentMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 posToMove = new Vector3(currentMousePos.x, currentMousePos.y, -0.15f);
+
+        rectTrans.position = posToMove / canvas.scaleFactor;
     }
 
+    
     public void OnEndDrag(PointerEventData eventData) {
-        throw new System.NotImplementedException();
-    }
 
-    public void OnPointerDown(PointerEventData eventData) {
-        throw new System.NotImplementedException();
-    }
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 1000, LayerMask.GetMask("Cell"));
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+        if(hit != false) {
+            Vector3 cellPos = hit.transform.position;
+            Vector3 posToGoTo = new Vector3(cellPos.x, cellPos.y, -0.15f);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+            rectTrans.position = posToGoTo;
+
+        } else{ Destroy(this.gameObject); }
+
     }
 }
