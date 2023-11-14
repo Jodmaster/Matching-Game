@@ -1,13 +1,19 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class Game_manager : MonoBehaviour
 {
     public int turnCounter;
     public int currentTurn;
+    public int bombsUsed;
+    public int bombLimit;
 
     public Cell[,] cells;
     public Cell[] selectedCells;
+
+    public List<Cell> cellsToEliminate;
 
     public Jewel jewel;
     public Blocker blocker;
@@ -29,6 +35,9 @@ public class Game_manager : MonoBehaviour
     public Sprite blueSprite;
     public Sprite greenSprite;
 
+    bool shouldBomb;
+    public Cell bombCell;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +45,9 @@ public class Game_manager : MonoBehaviour
         GameSetup();
 
         turnCounter = 5;
+        
+        bombLimit = 2;
+        bombsUsed = 0;
     }
 
     private void GameSetup()
@@ -110,6 +122,8 @@ public class Game_manager : MonoBehaviour
     }
 
     public void FixedUpdate() {
+
+        if(shouldBomb) { bombExplosion(bombCell); }
         /**
          * having these methods in update lead to what i think are clashes where both a jewel 
          * and sand simultaneously go into the same cell because they both think it's empty moving these into
@@ -118,6 +132,7 @@ public class Game_manager : MonoBehaviour
         if(sandToFall.Count > 0) { sandFall(); }
         if(shouldFall.Count > 0) { jewelFall(); }
 
+        //TODO 
         if(currentTurn <= 0) { }
     }
 
@@ -131,7 +146,7 @@ public class Game_manager : MonoBehaviour
         if (Input.GetMouseButtonDown(0)) {
             
             playerTurn();
-            
+
             if (selectedCells[0] != null) {
                                               
                 rules.getSquareToEliminate(selectedCells[0]);
@@ -144,7 +159,7 @@ public class Game_manager : MonoBehaviour
                     Cell[] squareToEliminate = new Cell[4];
 
                     squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
-                    eliminateJewels(squareToEliminate);
+                    eliminateJewels(squareToEliminate.ToList<Cell>()) ;
                     hasEliminated = true;
 
                     rules.squareElim = false;
@@ -167,7 +182,7 @@ public class Game_manager : MonoBehaviour
                     }
 
                     //then delete the jewels from the cell
-                    eliminateJewels(cellsToEliminate);
+                    eliminateJewels(cellsToEliminate.ToList<Cell>());
                     hasEliminated = true;     
 
                     //clears selected cells so that the player can't swap afterwards
@@ -209,11 +224,21 @@ public class Game_manager : MonoBehaviour
         turnCounter--;
     }
 
-    public void eliminateJewels(Cell[] cellsToElim) {
+    public void eliminateJewels(List<Cell> cellsToElim) {
+        
         //loops through the cells to Elim and destroys the contained jewels
-        for(int i = 0; i < cellsToElim.Length; i++) {
-            Transform jewelToDestroy = cellsToElim[i].transform.GetChild (0);
-            Destroy(jewelToDestroy.gameObject);
+        for(int i = 0; i < cellsToElim.Count; i++) {
+            if(cellsToElim[i] != null) {
+                Transform jewelToDestroy = cellsToElim[i].transform.GetChild(0);
+
+                if(jewelToDestroy.GetComponentInChildren<Bomb>()) {
+                    bombCell = jewelToDestroy.GetComponentInParent<Cell>();
+                    shouldBomb = true;
+                }
+
+               
+                Destroy(jewelToDestroy.gameObject);
+            }
         }
 
         rules.canEliminate = false;
@@ -265,7 +290,7 @@ public class Game_manager : MonoBehaviour
     }
 
     public void jewelFall() {
-        
+        Debug.Log("jewelfall");
         //loops through the should fall array getting the new parent and adjusting to the right transform
         for(int i = 0; i < shouldFall.Count; i++) {
 
@@ -274,7 +299,7 @@ public class Game_manager : MonoBehaviour
             Cell goalCell;
             
             goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-
+            
             currentJewel.transform.SetParent(goalCell.transform);
             currentJewel.currentParent = goalCell;
 
@@ -287,25 +312,24 @@ public class Game_manager : MonoBehaviour
     }
 
     public void sandFall() {
-        
+        Debug.Log("Sandfall");
+        Debug.Log(sandToFall.Count);
         //loops through the sand to fall array checks which direction it should fall and then updates parent and transform 
         for(int i = 0; i < sandToFall.Count; i++) {
-
             Sand currentSand = sandToFall[i];
             Cell currentParent = currentSand.currentParent;
             Cell goalCell;
 
-            if (currentSand.fallDown) {
+            if(currentSand.fallDown) {
                 goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-                if (goalCell) { SetParentAndTransform(currentSand, goalCell); }     
-            } else if (currentSand.fallLeft) {
+                if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+            } else if(currentSand.fallLeft) {
                 goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] - 1));
-                if (goalCell) { SetParentAndTransform(currentSand, goalCell); }
-            } else if (currentSand.fallRight) {
+                if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+            } else if(currentSand.fallRight) {
                 goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] + 1));
-                if (goalCell) { SetParentAndTransform(currentSand, goalCell); }
-            }
-                                  
+                if(goalCell) { SetParentAndTransform(currentSand, goalCell); }   
+            }                    
         }
 
         //helper method that sets new parent and transform
@@ -320,5 +344,25 @@ public class Game_manager : MonoBehaviour
             sandToFall.Remove(currentSand);
         
         }
+    }
+
+    public void bombExplosion(Cell origin) {
+
+        Debug.Log("explosion");
+
+        Cell[] cellsToElim = rules.CheckSquare(origin);
+        List<Cell> cellsWithJewels = new List<Cell>();
+
+        for(int i = 0; i < cellsToElim.Length; i++) {
+            if(cellsToElim[i] != null) {
+                if(cellsToElim[i].GetComponentInChildren<Jewel>()) {
+                    cellsWithJewels.Add(cellsToElim[i]);
+                }
+            }
+        }
+
+        shouldBomb = false;
+        bombCell = null;
+        eliminateJewels(cellsWithJewels);        
     }
 }

@@ -1,8 +1,8 @@
 
 using UnityEngine;
-using static GridItem_interface;
+using static IGridItem;
 
-public class Blocker : MonoBehaviour, GridItem_interface
+public class Blocker : MonoBehaviour, IGridItem
 {
     public gridItemType itemType => gridItemType.Blocker;
 

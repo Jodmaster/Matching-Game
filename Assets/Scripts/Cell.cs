@@ -1,23 +1,29 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static GridItem_interface;
+using static IGridItem;
 
 public class Cell : MonoBehaviour
 {
-    public GridItem_interface containedItem;
+    public Game_manager manager;
+
+    public IGridItem containedItem;
     public BoxCollider2D bxcollider;
     public SpriteRenderer rend;
+    
     public bool isSelected;
     public int cellNumber;
-
+    
     public int[] position;
   
     // Start is called before the first frame update
     void Start()
     {
+        manager = FindObjectOfType<Game_manager>();
+
         bxcollider = GetComponent<BoxCollider2D>();
         rend = GetComponent<SpriteRenderer>();
+        
         isSelected = false;
     }
 
@@ -31,7 +37,7 @@ public class Cell : MonoBehaviour
         }
     }
 
-    public void setContainedItem(GridItem_interface item)
+    public void setContainedItem(IGridItem item)
     {
         //Position to spawn item in cell just for off setting the z value to put it infront of the cell
         Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, -0.1f);
@@ -40,7 +46,7 @@ public class Cell : MonoBehaviour
         checkWhichItemToSpawn(item);
 
         //checks what item type to cast to and spawn in the cell 
-        void checkWhichItemToSpawn(GridItem_interface item)
+        void checkWhichItemToSpawn(IGridItem item)
         {
             if(item.itemType == gridItemType.Jewel){
                 containedItem = Instantiate((Jewel)item, spawnPos, transform.rotation, transform);
@@ -51,7 +57,7 @@ public class Cell : MonoBehaviour
             }                                                    
         }
     }
-    
+
     public void setSelected(bool isSelected){this.isSelected = isSelected;}
 
     public void setCellNumber(int cellNum) {cellNumber = cellNum;}

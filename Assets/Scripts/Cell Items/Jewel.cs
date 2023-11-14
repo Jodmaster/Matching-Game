@@ -1,11 +1,14 @@
 
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static GridItem_interface;
+using static IGridItem;
+using static IUsableItem;
 
-public class Jewel : MonoBehaviour, GridItem_interface {
-    gridItemType GridItem_interface.itemType => gridItemType.Jewel;
+public class Jewel : MonoBehaviour, IGridItem {
+    gridItemType IGridItem.itemType => gridItemType.Jewel;
+    IUsableItem usableItem;
 
     public Game_manager manager;
 
@@ -38,6 +41,8 @@ public class Jewel : MonoBehaviour, GridItem_interface {
         if(checkJewelBelow() && !manager.shouldFall.Contains(this)) {
             manager.shouldFall.Add(this);
         }
+
+        if(usableItem != null) { usableItem.trans.position = transform.position; }
     }
 
     //raycasts down to the next cell to see if it should fall down to the next cell
@@ -55,5 +60,8 @@ public class Jewel : MonoBehaviour, GridItem_interface {
         if (!jewel_check && !sand_check && !block_check) { return true; } 
         else { return false; }
     }
-      
+    
+    public void setUsableItem(IUsableItem item) {
+        usableItem = item;
+    }
 }

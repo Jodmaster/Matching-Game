@@ -1,10 +1,10 @@
 
 using UnityEngine;
-using static GridItem_interface;
+using static IGridItem;
 
-public class Sand : MonoBehaviour, GridItem_interface
+public class Sand : MonoBehaviour, IGridItem
 {
-    gridItemType GridItem_interface.itemType => gridItemType.Sand;
+    gridItemType IGridItem.itemType => gridItemType.Sand;
 
     public Cell currentParent;
     Game_manager manager;
