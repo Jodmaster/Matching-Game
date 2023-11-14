@@ -312,8 +312,7 @@ public class Game_manager : MonoBehaviour
     }
 
     public void sandFall() {
-        Debug.Log("Sandfall");
-        Debug.Log(sandToFall.Count);
+        
         //loops through the sand to fall array checks which direction it should fall and then updates parent and transform 
         for(int i = 0; i < sandToFall.Count; i++) {
             Sand currentSand = sandToFall[i];
