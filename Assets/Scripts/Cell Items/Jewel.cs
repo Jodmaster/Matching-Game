@@ -1,14 +1,13 @@
 
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static IGridItem;
 using static IUsableItem;
 
 public class Jewel : MonoBehaviour, IGridItem {
     gridItemType IGridItem.itemType => gridItemType.Jewel;
-    IUsableItem usableItem;
+    List<IUsableItem> usableItems = new List<IUsableItem>();
 
     public Game_manager manager;
 
@@ -17,6 +16,7 @@ public class Jewel : MonoBehaviour, IGridItem {
     public Cell currentParent;
 
     public LayerMask jewelLayer;
+    
 
     // Start is called before the first frame update
     void Start() {
@@ -37,12 +37,31 @@ public class Jewel : MonoBehaviour, IGridItem {
 
     // Update is called once per frame
     void Update() {
+        
+        
         //checks if the jewel should fall and if it's already in the shouldfall array
         if(checkJewelBelow() && !manager.shouldFall.Contains(this)) {
             manager.shouldFall.Add(this);
         }
 
-        if(usableItem != null) { usableItem.trans.position = transform.position; }
+        //switches the position of items so they aren't overlayed on top of each other
+        foreach(IUsableItem usableItem in usableItems) {
+
+            switch(usableItems.Count) {
+                case 1:
+                    usableItems[0].trans.position = transform.position + new Vector3(0.3f, 0.3f, -1f);                    
+                    break;
+                case 2:
+                    usableItems[1].trans.position = transform.position + new Vector3(0.3f, -0.3f, -1f);
+                    break;
+                case 3:
+                    usableItems[2].trans.position = transform.position + new Vector3(-0.3f, 0.3f, -1f);
+                    break;
+                case 4:
+                    usableItems[3].trans.position = transform.position + new Vector3(-0.3f, -0.3f, -1f);
+                    break;
+            }                           
+        }
     }
 
     //raycasts down to the next cell to see if it should fall down to the next cell
@@ -62,6 +81,6 @@ public class Jewel : MonoBehaviour, IGridItem {
     }
     
     public void setUsableItem(IUsableItem item) {
-        usableItem = item;
+        usableItems.Add(item);
     }
 }

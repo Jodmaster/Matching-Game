@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 public class Game_manager : MonoBehaviour
 {
@@ -16,6 +14,9 @@ public class Game_manager : MonoBehaviour
 
     public int colorBombsUsed;
     public int colorBombsLimit;
+
+    public int concreteUsed;
+    public int concreteLimit;
 
     public Cell[,] cells;
     public Cell[] selectedCells;
@@ -49,6 +50,9 @@ public class Game_manager : MonoBehaviour
     public Cell colourBombCell;
     public Color originColor;
 
+    public bool shouldConcrete;
+    public Cell concreteCell;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,6 +66,9 @@ public class Game_manager : MonoBehaviour
 
         colorBombsLimit = 2;
         colorBombsUsed = 0;
+
+        concreteLimit = 2;
+        concreteUsed = 0;
     }
 
     private void GameSetup()
@@ -265,6 +272,10 @@ public class Game_manager : MonoBehaviour
                     originColor = jewelToDestroy.GetComponent<Jewel>().jewelColor;
                     shouldColourBomb = true;
                 }
+
+                if(jewelToDestroy.GetComponentInChildren<Concretion>()) {
+                    Concretion(jewelToDestroy.GetComponentInParent<Cell>());
+                }
               
                 Destroy(jewelToDestroy.gameObject);
             }
@@ -421,5 +432,11 @@ public class Game_manager : MonoBehaviour
         shouldColourBomb = false;
         colourBombCell = null;
         eliminateJewels(cellWithCorrectColour);
+    }
+
+    public void Concretion(Cell cellToConcrete) {
+        if(cellToConcrete.GetComponentInChildren<Jewel>() != null) {    
+            cellToConcrete.setContainedItem(blocker);
+        }
     }
 }
