@@ -1,12 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Game_manager : MonoBehaviour
 {
     public int turnCounter;
     public int currentTurn;
+    
     public int bombsUsed;
     public int bombLimit;
 
@@ -37,6 +40,9 @@ public class Game_manager : MonoBehaviour
 
     bool shouldBomb;
     public Cell bombCell;
+
+    bool shouldColourBomb;
+    public Cell colourBombCell;
 
     // Start is called before the first frame update
     void Start()
@@ -123,7 +129,10 @@ public class Game_manager : MonoBehaviour
 
     public void FixedUpdate() {
 
+        //check bombs first so new jewels haven't fallen into empty cells
         if(shouldBomb) { bombExplosion(bombCell); }
+        if(shouldColourBomb) { colourBombExplosion(colourBombCell); }
+        
         /**
          * having these methods in update lead to what i think are clashes where both a jewel 
          * and sand simultaneously go into the same cell because they both think it's empty moving these into
@@ -206,21 +215,23 @@ public class Game_manager : MonoBehaviour
 
     public void swapJewels() {
         //gets the children of the selected cells
-        Transform cellItem1 = selectedCells[0].transform.GetChild(0);
-        Transform cellItem2 = selectedCells[1].transform.GetChild(0);
+        if(selectedCells[0] != null && selectedCells[1] != null) {
+            Transform cellItem1 = selectedCells[0].transform.GetChild(0);
+            Transform cellItem2 = selectedCells[1].transform.GetChild(0);
 
-        //checks that the got item is a jewel 
-        if (cellItem1.GetComponent<Jewel>() != null && cellItem2.GetComponent<Jewel>() != null) { 
-            //changes parents of the jewel and then updates the transform
-            cellItem1.SetParent(selectedCells[1].transform);
-            cellItem1.GetComponent<Jewel>().currentParent = selectedCells[1]; 
-            cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
+            //checks that the got item is a jewel 
+            if(cellItem1.GetComponent<Jewel>() != null && cellItem2.GetComponent<Jewel>() != null) {
+                //changes parents of the jewel and then updates the transform
+                cellItem1.SetParent(selectedCells[1].transform);
+                cellItem1.GetComponent<Jewel>().currentParent = selectedCells[1];
+                cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
 
-            cellItem2.SetParent(selectedCells[0].transform);
-            cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
-            cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+                cellItem2.SetParent(selectedCells[0].transform);
+                cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
+                cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+            }
         }
-
+        
         turnCounter--;
     }
 
@@ -231,9 +242,15 @@ public class Game_manager : MonoBehaviour
             if(cellsToElim[i] != null) {
                 Transform jewelToDestroy = cellsToElim[i].transform.GetChild(0);
 
+                //checks if a jewel contains the bomb item
                 if(jewelToDestroy.GetComponentInChildren<Bomb>()) {
                     bombCell = jewelToDestroy.GetComponentInParent<Cell>();
                     shouldBomb = true;
+                }
+
+                if(jewelToDestroy.GetComponentInChildren<Colour_Bomb>()) {
+                    colourBombCell = jewelToDestroy.GetComponentInParent<Cell>();
+                    shouldColourBomb = true;
                 }
 
                
@@ -268,9 +285,11 @@ public class Game_manager : MonoBehaviour
             } else {
                 selectedCells[1] = cellHit.transform.GetComponent<Cell>();
             }
-        }
+        } else {
+            if(selectedCells[0] != null) { selectedCells[0].setSelected(false); }
+            if(selectedCells[1] != null) { selectedCells[1].setSelected(false); }
+            Array.Clear(selectedCells, 0, selectedCells.Length); }
 
-  
     }
 
     public Cell getCellAtPosition(int cellRow, int cellCol) {
@@ -290,7 +309,7 @@ public class Game_manager : MonoBehaviour
     }
 
     public void jewelFall() {
-        Debug.Log("jewelfall");
+        
         //loops through the should fall array getting the new parent and adjusting to the right transform
         for(int i = 0; i < shouldFall.Count; i++) {
 
@@ -299,16 +318,18 @@ public class Game_manager : MonoBehaviour
             Cell goalCell;
             
             goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-            
-            currentJewel.transform.SetParent(goalCell.transform);
-            currentJewel.currentParent = goalCell;
 
-            Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
-            currentJewel.transform.position = posToChangeTo;
+            if (currentJewel != null)
+            {
+                currentJewel.transform.SetParent(goalCell.transform);
+                currentJewel.currentParent = goalCell;
 
-            shouldFall.Remove(currentJewel);
-        }
-     
+                Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
+                currentJewel.transform.position = posToChangeTo;
+
+                shouldFall.Remove(currentJewel);
+            }           
+        }    
     }
 
     public void sandFall() {
@@ -347,7 +368,8 @@ public class Game_manager : MonoBehaviour
 
     public void bombExplosion(Cell origin) {
 
-        Debug.Log("explosion");
+        //when called gets the 3x3 square around the origin, loops through to find 
+        //cells with jewels and then eliminates them
 
         Cell[] cellsToElim = rules.CheckSquare(origin);
         List<Cell> cellsWithJewels = new List<Cell>();
@@ -363,5 +385,31 @@ public class Game_manager : MonoBehaviour
         shouldBomb = false;
         bombCell = null;
         eliminateJewels(cellsWithJewels);        
+    }
+
+    public void colourBombExplosion(Cell origin) {
+        
+        List<Cell> cellWithCorrectColour = new List<Cell>();
+        
+        Color originColor = origin.GetComponentInChildren<Jewel>().jewelColor;
+
+        Debug.Log(originColor.ToString());
+
+        for(int row = 0; row < numOfRows; row++) {
+            for(int col = 0; col < numOfCols; col++) {
+                
+                Cell cellToCheck = cells[row, col];
+                
+                if(cellToCheck.GetComponentInChildren<Jewel>()) {
+                    if(cellToCheck.GetComponentInChildren<Jewel>().jewelColor == originColor) {
+                        cellWithCorrectColour.Add(cellToCheck);
+                    }
+                }                
+            }
+        }
+
+        shouldColourBomb = false;
+        colourBombCell = null;
+        eliminateJewels(cellWithCorrectColour);
     }
 }

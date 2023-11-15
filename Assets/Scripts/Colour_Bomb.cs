@@ -4,22 +4,27 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using static IUsableItem;
 
-public class Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler
-{
-    itemType type => itemType.Bomb;
+public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler {
 
+    itemType type => itemType.Color;
+    
     public RectTransform trans => GetComponent<RectTransform>();
 
     private Canvas canvas;
     private CanvasGroup group;
     private Game_manager manager;
-    
 
+    // Start is called before the first frame update
     void Start() {
         canvas = FindObjectOfType<Canvas>();
         manager = FindObjectOfType<Game_manager>();
 
-        group = GetComponent<CanvasGroup>();        
+        group = GetComponent<CanvasGroup>();
+    }
+
+    // Update is called once per frame
+    void Update() {
+
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
@@ -35,9 +40,9 @@ public class Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler,
 
         trans.position = posToMove / canvas.scaleFactor;
     }
-   
-    public void OnEndDrag(PointerEventData eventData) {
 
+    public void OnEndDrag(PointerEventData eventData) {
+        
         //Ray casts for a cell beneath the bomb
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 1000, LayerMask.GetMask("Cell"));
@@ -52,13 +57,14 @@ public class Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler,
 
             trans.position = posToGoTo;
 
-            if(cell.GetComponentInChildren<Jewel>() != null && manager.bombsUsed < manager.bombLimit) {
+            if(cell.GetComponentInChildren<Jewel>() != null ) {
                 transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
                 GetComponentInParent<Jewel>().setUsableItem(this);
-                manager.bombsUsed++; 
+                
             } else { Destroy(gameObject); }
-            
-        } else{ Destroy(gameObject); }
 
+        } else { Destroy(gameObject); }
+   
     }
+   
 }

@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -34,7 +31,6 @@ public class Bomb_spawn : MonoBehaviour, IDragHandler, IInitializePotentialDragH
         } 
     }
 
-    public void OnDrag(PointerEventData eventData) {       
-    }
+    public void OnDrag(PointerEventData eventData) {}
 
 }
