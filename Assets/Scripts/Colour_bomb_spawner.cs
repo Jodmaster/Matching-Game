@@ -16,20 +16,21 @@ public class Colour_bomb_spawner : MonoBehaviour, IDragHandler, IInitializePoten
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
+    void Update(){
+        if(!(manager.colorBombsUsed < manager.colorBombsLimit)) { button.interactable = false; }
     }
 
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);
+        if(manager.colorBombsUsed < manager.colorBombsLimit) {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);
 
-        Quaternion rot = new Quaternion();
-        rot.eulerAngles = Vector3.up;
+            Quaternion rot = new Quaternion();
+            rot.eulerAngles = Vector3.up;
 
-        Colour_Bomb colorBomb = Instantiate(colorBombPrefab, spawnPos, rot);
-        eventData.pointerDrag = colorBomb.transform.gameObject;
+            Colour_Bomb colorBomb = Instantiate(colorBombPrefab, spawnPos, rot);
+            eventData.pointerDrag = colorBomb.transform.gameObject;
+        }
     }
 
     public void OnDrag(PointerEventData eventData) {}

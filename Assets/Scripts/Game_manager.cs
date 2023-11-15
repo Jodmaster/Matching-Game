@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,6 +13,9 @@ public class Game_manager : MonoBehaviour
     
     public int bombsUsed;
     public int bombLimit;
+
+    public int colorBombsUsed;
+    public int colorBombsLimit;
 
     public Cell[,] cells;
     public Cell[] selectedCells;
@@ -43,6 +47,7 @@ public class Game_manager : MonoBehaviour
 
     bool shouldColourBomb;
     public Cell colourBombCell;
+    public Color originColor;
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +59,9 @@ public class Game_manager : MonoBehaviour
         
         bombLimit = 2;
         bombsUsed = 0;
+
+        colorBombsLimit = 2;
+        colorBombsUsed = 0;
     }
 
     private void GameSetup()
@@ -240,8 +248,10 @@ public class Game_manager : MonoBehaviour
         //loops through the cells to Elim and destroys the contained jewels
         for(int i = 0; i < cellsToElim.Count; i++) {
             if(cellsToElim[i] != null) {
+                
                 Transform jewelToDestroy = cellsToElim[i].transform.GetChild(0);
 
+                //have to use bools for the usable items for functional execution order in fixed update
                 //checks if a jewel contains the bomb item
                 if(jewelToDestroy.GetComponentInChildren<Bomb>()) {
                     bombCell = jewelToDestroy.GetComponentInParent<Cell>();
@@ -250,10 +260,12 @@ public class Game_manager : MonoBehaviour
 
                 if(jewelToDestroy.GetComponentInChildren<Colour_Bomb>()) {
                     colourBombCell = jewelToDestroy.GetComponentInParent<Cell>();
+                    
+                    //need to get color here otherwise jewel will be missing in colorBombExplosion method
+                    originColor = jewelToDestroy.GetComponent<Jewel>().jewelColor;
                     shouldColourBomb = true;
                 }
-
-               
+              
                 Destroy(jewelToDestroy.gameObject);
             }
         }
@@ -391,23 +403,21 @@ public class Game_manager : MonoBehaviour
         
         List<Cell> cellWithCorrectColour = new List<Cell>();
         
-        Color originColor = origin.GetComponentInChildren<Jewel>().jewelColor;
-
-        Debug.Log(originColor.ToString());
-
+        //loop through all the cells and checks if they contain a same color jewel
         for(int row = 0; row < numOfRows; row++) {
             for(int col = 0; col < numOfCols; col++) {
                 
                 Cell cellToCheck = cells[row, col];
                 
-                if(cellToCheck.GetComponentInChildren<Jewel>()) {
+                if(cellToCheck.GetComponentInChildren<Jewel>() != null) {
                     if(cellToCheck.GetComponentInChildren<Jewel>().jewelColor == originColor) {
                         cellWithCorrectColour.Add(cellToCheck);
                     }
-                }                
+                }                                
             }
         }
 
+        //deletes all jewels with same color
         shouldColourBomb = false;
         colourBombCell = null;
         eliminateJewels(cellWithCorrectColour);

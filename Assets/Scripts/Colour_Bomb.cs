@@ -52,15 +52,18 @@ public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragH
         if(hit != false) {
             Vector3 cellPos = hit.transform.position;
             Vector3 posToGoTo = new Vector3(cellPos.x, cellPos.y, -0.15f);
+            group.alpha = 1f;
 
             Cell cell = hit.transform.GetComponent<Cell>();
+            Debug.Log(cell.name);
 
             trans.position = posToGoTo;
 
+            //we check if there's a jewel 
             if(cell.GetComponentInChildren<Jewel>() != null ) {
                 transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
                 GetComponentInParent<Jewel>().setUsableItem(this);
-                
+                manager.colorBombsUsed++;
             } else { Destroy(gameObject); }
 
         } else { Destroy(gameObject); }
