@@ -52,6 +52,9 @@ public class Game_manager : MonoBehaviour
 
     public bool shouldConcrete;
     public Cell concreteCell;
+    
+    private bool shouldBreak;
+    private Jewel jewelToBreak;
 
     // Start is called before the first frame update
     void Start()
@@ -155,6 +158,8 @@ public class Game_manager : MonoBehaviour
         */
         if(sandToFall.Count > 0) { sandFall(); }
         if(shouldFall.Count > 0) { jewelFall(); }
+
+        if(shouldBreak) { Destroy(jewelToBreak.gameObject); shouldBreak = false; }
 
         //TODO 
         if(currentTurn <= 0) { }
@@ -350,7 +355,12 @@ public class Game_manager : MonoBehaviour
                 Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
                 currentJewel.transform.position = posToChangeTo;
 
-                shouldFall.Remove(currentJewel);
+                if(currentJewel.GetComponentInChildren<Fragile>() != null) {
+                    jewelToBreak = currentJewel; 
+                    shouldBreak = true;
+                }
+
+                shouldFall.Remove(currentJewel);                
             }           
         }    
     }

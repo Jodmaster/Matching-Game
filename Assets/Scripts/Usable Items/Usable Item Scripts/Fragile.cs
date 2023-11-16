@@ -2,17 +2,16 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using static IUsableItem;
 
-public class Concretion : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler {
+public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler {
 
-    itemType type => itemType.Concretion;
+    itemType type = itemType.Fragile;
     public RectTransform trans => GetComponent<RectTransform>();
+
     private Canvas canvas;
     private CanvasGroup group;
     private Game_manager manager;
 
 
-
-    // Start is called before the first frame update
     void Start() {
         canvas = FindObjectOfType<Canvas>();
         manager = FindObjectOfType<Game_manager>();
@@ -35,7 +34,6 @@ public class Concretion : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHa
     }
 
     public void OnEndDrag(PointerEventData eventData) {
-        
         //Ray casts for a cell beneath the bomb
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, 1000, LayerMask.GetMask("Cell"));
@@ -50,15 +48,12 @@ public class Concretion : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHa
 
             trans.position = posToGoTo;
 
-            if(cell.GetComponentInChildren<Jewel>() != null && manager.concreteUsed < manager.concreteLimit) {
+            if(cell.GetComponentInChildren<Jewel>() != null) {
                 transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
                 GetComponentInParent<Jewel>().setUsableItem(this);
-
-                manager.concreteUsed++;
+                
             } else { Destroy(gameObject); }
 
         } else { Destroy(gameObject); }
     }
-
-    
 }
