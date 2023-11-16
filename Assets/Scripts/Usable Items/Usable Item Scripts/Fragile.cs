@@ -51,7 +51,7 @@ public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandl
             if(cell.GetComponentInChildren<Jewel>() != null) {
                 transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
                 GetComponentInParent<Jewel>().setUsableItem(this);
-                
+                manager.fragileUsed++;
             } else { Destroy(gameObject); }
 
         } else { Destroy(gameObject); }

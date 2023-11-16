@@ -17,20 +17,21 @@ public class Fragile_spawner : MonoBehaviour, IDragHandler, IInitializePotential
     // Update is called once per frame
     void Update()
     {
-        
+        if(!(manager.fragileUsed < manager.fragileLimit)) { button.interactable = false; }
     }
 
     public void OnDrag(PointerEventData eventData) {}
 
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);
+        if(manager.fragileUsed < manager.fragileLimit) {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);
 
-        Quaternion rot = new Quaternion();
-        rot.eulerAngles = Vector3.up;
+            Quaternion rot = new Quaternion();
+            rot.eulerAngles = Vector3.up;
 
-        Fragile fragile = Instantiate(fragilePrefab, spawnPos, rot);
-        eventData.pointerDrag = fragile.transform.gameObject;
+            Fragile fragile = Instantiate(fragilePrefab, spawnPos, rot);
+            eventData.pointerDrag = fragile.transform.gameObject;
+        }
     }
 }

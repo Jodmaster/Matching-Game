@@ -18,6 +18,9 @@ public class Game_manager : MonoBehaviour
     public int concreteUsed;
     public int concreteLimit;
 
+    public int fragileUsed;
+    public int fragileLimit;
+
     public Cell[,] cells;
     public Cell[] selectedCells;
 
@@ -72,6 +75,9 @@ public class Game_manager : MonoBehaviour
 
         concreteLimit = 2;
         concreteUsed = 0;
+
+        fragileLimit = 2;
+        fragileUsed = 0;
     }
 
     private void GameSetup()
