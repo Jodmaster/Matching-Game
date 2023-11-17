@@ -10,6 +10,7 @@ public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandl
     private Canvas canvas;
     private CanvasGroup group;
     private Game_manager manager;
+    private SpriteRenderer rend;
 
 
     void Start() {
@@ -17,6 +18,7 @@ public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandl
         manager = FindObjectOfType<Game_manager>();
 
         group = GetComponent<CanvasGroup>();
+        rend = GetComponent<SpriteRenderer>();
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
@@ -26,6 +28,8 @@ public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandl
     }
 
     public void OnDrag(PointerEventData eventData) {
+        rend.sortingOrder = 2;
+
         //gets current mouse pos and then sets the bomb to that position accounting for the scale factor of the canvas
         Vector3 currentMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 posToMove = new Vector3(currentMousePos.x, currentMousePos.y, -0.15f);
@@ -42,11 +46,11 @@ public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandl
         //else destroy this gameobject
         if(hit != false) {
             Vector3 cellPos = hit.transform.position;
-            Vector3 posToGoTo = new Vector3(cellPos.x, cellPos.y, -0.15f);
-
+            Vector3 posToGoTo = new Vector3(cellPos.x, cellPos.y, 0.15f);
+            rend.sortingOrder = 0;
             Cell cell = hit.transform.GetComponent<Cell>();
 
-            trans.position = posToGoTo;
+            trans.localPosition = posToGoTo;
 
             if(cell.GetComponentInChildren<Jewel>() != null) {
 

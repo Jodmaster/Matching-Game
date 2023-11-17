@@ -9,6 +9,7 @@ public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragH
     private Canvas canvas;
     private CanvasGroup group;
     private Game_manager manager;
+    private SpriteRenderer rend;
 
     // Start is called before the first frame update
     void Start() {
@@ -16,6 +17,7 @@ public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragH
         manager = FindObjectOfType<Game_manager>();
 
         group = GetComponent<CanvasGroup>();
+        rend = GetComponent<SpriteRenderer>();
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
@@ -25,6 +27,8 @@ public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragH
     }
 
     public void OnDrag(PointerEventData eventData) {
+        rend.sortingOrder = 2;
+
         //gets current mouse pos and then sets the bomb to that position accounting for the scale factor of the canvas
         Vector3 currentMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 posToMove = new Vector3(currentMousePos.x, currentMousePos.y, -0.15f);
@@ -42,18 +46,20 @@ public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragH
         //else destroy this gameobject
         if(hit != false) {
             Vector3 cellPos = hit.transform.position;
-            Vector3 posToGoTo = new Vector3(cellPos.x, cellPos.y, -0.15f);
+            Vector3 posToGoTo = new Vector3(cellPos.x, cellPos.y, 0.15f);
+            rend.sortingOrder = 0;
             group.alpha = 1f;
 
             Cell cell = hit.transform.GetComponent<Cell>();
 
-            trans.position = posToGoTo;
+            trans.localPosition = posToGoTo;
 
             //we check if there's a jewel 
             if(cell.GetComponentInChildren<Jewel>() != null ) {
                 //check that the jewel doesn't already contain a colour bomb
                 Jewel targetJewel = cell.GetComponentInChildren<Jewel>();
                 bool containsColorBomb = false;
+                
 
 
                 foreach(IUsableItem item in targetJewel.usableItems) {

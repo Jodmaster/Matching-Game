@@ -50,16 +50,16 @@ public class Jewel : MonoBehaviour, IGridItem {
 
             switch(usableItems.Count) {
                 case 1:
-                    usableItems[0].trans.position = transform.position + new Vector3(0.3f, 0.3f, -1f);                    
+                    usableItems[0].trans.position = transform.position + new Vector3(0.3f, 0.3f, 1f);                    
                     break;
                 case 2:
-                    usableItems[1].trans.position = transform.position + new Vector3(0.3f, -0.3f, -1f);
+                    usableItems[1].trans.position = transform.position + new Vector3(0.3f, -0.3f, 1f);
                     break;
                 case 3:
-                    usableItems[2].trans.position = transform.position + new Vector3(-0.3f, 0.3f, -1f);
+                    usableItems[2].trans.position = transform.position + new Vector3(-0.3f, 0.3f, 1f);
                     break;
                 case 4:
-                    usableItems[3].trans.position = transform.position + new Vector3(-0.3f, -0.3f, -1f);
+                    usableItems[3].trans.position = transform.position + new Vector3(-0.3f, -0.3f, 1f);
                     break;
             }                           
         }
