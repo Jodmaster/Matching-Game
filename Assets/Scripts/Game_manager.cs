@@ -153,6 +153,8 @@ public class Game_manager : MonoBehaviour
 
     public void FixedUpdate() {
 
+        if(shouldBreak) { Destroy(jewelToBreak.gameObject); shouldBreak = false; }
+
         //check bombs first so new jewels haven't fallen into empty cells
         if(shouldBomb) { bombExplosion(bombCell); }
         if(shouldColourBomb) { colourBombExplosion(colourBombCell); }
@@ -165,7 +167,7 @@ public class Game_manager : MonoBehaviour
         if(sandToFall.Count > 0) { sandFall(); }
         if(shouldFall.Count > 0) { jewelFall(); }
 
-        if(shouldBreak) { Destroy(jewelToBreak.gameObject); shouldBreak = false; }
+        
 
         //TODO 
         if(currentTurn <= 0) { }
