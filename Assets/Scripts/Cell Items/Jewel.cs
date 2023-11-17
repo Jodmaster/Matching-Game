@@ -7,13 +7,16 @@ using static IUsableItem;
 
 public class Jewel : MonoBehaviour, IGridItem {
     gridItemType IGridItem.itemType => gridItemType.Jewel;
-    List<IUsableItem> usableItems = new List<IUsableItem>();
+    public List<IUsableItem> usableItems = new List<IUsableItem>();
 
     public Game_manager manager;
 
     public Color jewelColor;
     public SpriteRenderer rend;
     public Cell currentParent;
+
+    public Sprite sprite;
+    public Sprite selectedSprite;
 
     public LayerMask jewelLayer;
     
@@ -28,17 +31,15 @@ public class Jewel : MonoBehaviour, IGridItem {
 
         //sets sprite based on jewel color
         rend = GetComponent<SpriteRenderer>();
-        
-        if(jewelColor == Color.red) { rend.sprite = manager.redSprite; } 
-        else if  (jewelColor == Color.blue) {rend.sprite =  manager.blueSprite;} 
-        else if (jewelColor == Color.green) { rend.sprite = manager.greenSprite;}
-        else { rend.color = jewelColor; }
+
+        rend.sprite = sprite;
     }
 
     // Update is called once per frame
     void Update() {
-        
-        
+
+        if(currentParent.isSelected) { rend.sprite = selectedSprite; } else { rend.sprite = sprite; }
+
         //checks if the jewel should fall and if it's already in the shouldfall array
         if(checkJewelBelow() && !manager.shouldFall.Contains(this)) {
             manager.shouldFall.Add(this);

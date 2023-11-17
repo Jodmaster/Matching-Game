@@ -4,7 +4,7 @@ using static IUsableItem;
 
 public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler {
 
-    itemType type = itemType.Fragile;
+
     public RectTransform trans => GetComponent<RectTransform>();
 
     private Canvas canvas;
@@ -49,9 +49,22 @@ public class Fragile : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandl
             trans.position = posToGoTo;
 
             if(cell.GetComponentInChildren<Jewel>() != null) {
-                transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
-                GetComponentInParent<Jewel>().setUsableItem(this);
-                manager.fragileUsed++;
+
+                //we check that the jewel doesn't already contain a fragile
+                Jewel targetJewel = cell.GetComponentInChildren<Jewel>();
+                bool containsFragile = false;
+
+
+                foreach(IUsableItem item in targetJewel.usableItems) {
+                    if(item is Fragile) { containsFragile = true; }
+                }
+
+                if(!containsFragile) {
+                    transform.SetParent(targetJewel.transform);
+                    GetComponentInParent<Jewel>().setUsableItem(this);
+                    manager.fragileUsed++;
+                } else { Destroy(gameObject); }
+
             } else { Destroy(gameObject); }
 
         } else { Destroy(gameObject); }

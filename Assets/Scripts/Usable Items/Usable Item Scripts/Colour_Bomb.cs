@@ -4,8 +4,6 @@ using static IUsableItem;
 
 public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler {
 
-    itemType type => itemType.Color;
-    
     public RectTransform trans => GetComponent<RectTransform>();
 
     private Canvas canvas;
@@ -18,11 +16,6 @@ public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragH
         manager = FindObjectOfType<Game_manager>();
 
         group = GetComponent<CanvasGroup>();
-    }
-
-    // Update is called once per frame
-    void Update() {
-
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
@@ -53,15 +46,26 @@ public class Colour_Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragH
             group.alpha = 1f;
 
             Cell cell = hit.transform.GetComponent<Cell>();
-            Debug.Log(cell.name);
 
             trans.position = posToGoTo;
 
             //we check if there's a jewel 
             if(cell.GetComponentInChildren<Jewel>() != null ) {
-                transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
-                GetComponentInParent<Jewel>().setUsableItem(this);
-                manager.colorBombsUsed++;
+                //check that the jewel doesn't already contain a colour bomb
+                Jewel targetJewel = cell.GetComponentInChildren<Jewel>();
+                bool containsColorBomb = false;
+
+
+                foreach(IUsableItem item in targetJewel.usableItems) {
+                    if(item is Colour_Bomb) { containsColorBomb = true; }
+                }
+
+                if(!containsColorBomb) {
+                    transform.SetParent(targetJewel.transform);
+                    GetComponentInParent<Jewel>().setUsableItem(this);
+                    manager.colorBombsUsed++;
+                } else { Destroy(gameObject); }
+
             } else { Destroy(gameObject); }
 
         } else { Destroy(gameObject); }

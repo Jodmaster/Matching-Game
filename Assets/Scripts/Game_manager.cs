@@ -46,6 +46,10 @@ public class Game_manager : MonoBehaviour
     public Sprite blueSprite;
     public Sprite greenSprite;
 
+    public Sprite redSelectedSprite;
+    public Sprite blueSelectedSprite;
+    public Sprite greenSelectedSprite;
+
     bool shouldBomb;
     public Cell bombCell;
 
@@ -111,12 +115,18 @@ public class Game_manager : MonoBehaviour
                         switch(level1.jemColorMap[rowCount, colCount]){  
                             case 0:
                                 jewelToSet.jewelColor = Color.red;
+                                jewelToSet.sprite = redSprite;
+                                jewelToSet.selectedSprite = redSelectedSprite;
                                 break;
                             case 1:
                                 jewelToSet.jewelColor = Color.blue;
+                                jewelToSet.sprite = blueSprite;
+                                jewelToSet.selectedSprite = blueSelectedSprite;
                                 break;
                             case 2:
-                                jewelToSet.jewelColor = Color.green; 
+                                jewelToSet.jewelColor = Color.green;
+                                jewelToSet.sprite = greenSprite;
+                                jewelToSet.selectedSprite = greenSelectedSprite;
                                 break;
                         }
 
@@ -153,23 +163,25 @@ public class Game_manager : MonoBehaviour
 
     public void FixedUpdate() {
 
-        if(shouldBreak) { Destroy(jewelToBreak.gameObject); shouldBreak = false; }
+        if(shouldBreak && jewelToBreak != null) {
+           List<Cell> jewelToDestroy = new List<Cell>() {jewelToBreak.GetComponentInParent<Cell>()};          
+           eliminateJewels(jewelToDestroy); 
+           shouldBreak = false; 
+        } 
 
         //check bombs first so new jewels haven't fallen into empty cells
         if(shouldBomb) { bombExplosion(bombCell); }
         if(shouldColourBomb) { colourBombExplosion(colourBombCell); }
-        
+     
         /**
          * having these methods in update lead to what i think are clashes where both a jewel 
          * and sand simultaneously go into the same cell because they both think it's empty moving these into
          * fixed update seems to have spaced the calculations out enough that these clashes don't happen
         */
         if(sandToFall.Count > 0) { sandFall(); }
-        if(shouldFall.Count > 0) { jewelFall(); }
+        if(shouldFall.Count > 0) { jewelFall(); }      
 
-        
-
-        //TODO 
+        //TODO levels
         if(currentTurn <= 0) { }
     }
 
@@ -226,8 +238,7 @@ public class Game_manager : MonoBehaviour
                     for(int i = 0; i < selectedCells.Length; i++) {
                         selectedCells[i] = null;
                     }
-                } 
-                
+                }                 
             }
 
 
@@ -257,6 +268,14 @@ public class Game_manager : MonoBehaviour
                 cellItem2.SetParent(selectedCells[0].transform);
                 cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
                 cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+
+
+                //deselects cells so sprites react properly
+                selectedCells[0].setSelected(false);
+                selectedCells[1].setSelected(false);
+
+                selectedCells[0] = null;
+                selectedCells[1] = null;
             }
         }
         
@@ -363,6 +382,7 @@ public class Game_manager : MonoBehaviour
                 Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
                 currentJewel.transform.position = posToChangeTo;
 
+                //checks if the jewel has the fragile item attached and then saves it for fixed update to destroy
                 if(currentJewel.GetComponentInChildren<Fragile>() != null) {
                     jewelToBreak = currentJewel; 
                     shouldBreak = true;

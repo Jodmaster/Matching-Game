@@ -4,7 +4,7 @@ using static IUsableItem;
 
 public class Concretion : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler {
 
-    itemType type => itemType.Concretion;
+
     public RectTransform trans => GetComponent<RectTransform>();
     private Canvas canvas;
     private CanvasGroup group;
@@ -51,10 +51,21 @@ public class Concretion : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHa
             trans.position = posToGoTo;
 
             if(cell.GetComponentInChildren<Jewel>() != null && manager.concreteUsed < manager.concreteLimit) {
-                transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
-                GetComponentInParent<Jewel>().setUsableItem(this);
+                //check that the jewel doesn't already contain a concretion
+                Jewel targetJewel = cell.GetComponentInChildren<Jewel>();
+                bool containsConcrete = false;
 
-                manager.concreteUsed++;
+
+                foreach(IUsableItem item in targetJewel.usableItems) {
+                    if(item is Concretion) { containsConcrete = true; }
+                }
+
+                if(!containsConcrete) {
+                    transform.SetParent(targetJewel.transform);
+                    GetComponentInParent<Jewel>().setUsableItem(this);
+                    manager.concreteUsed++;
+                } else { Destroy(gameObject); }
+
             } else { Destroy(gameObject); }
 
         } else { Destroy(gameObject); }

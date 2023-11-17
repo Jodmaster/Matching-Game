@@ -227,8 +227,8 @@ Tilemap:
   - first: {x: -1, y: -3, z: 0}
     second:
       serializedVersion: 2
-      m_TileIndex: 5
-      m_TileSpriteIndex: 4
+      m_TileIndex: 6
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -586,9 +586,9 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: cd1c141968610b14698b141928bb2ebe, type: 2}
   - m_RefCount: 4
     m_Data: {fileID: 11400000, guid: 91b1fc48d0237384189066ba4fca42d9, type: 2}
-  - m_RefCount: 2
+  - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: e8f734d24f2b4024f8576364ca23e7b9, type: 2}
-  - m_RefCount: 3
+  - m_RefCount: 4
     m_Data: {fileID: 11400000, guid: 9e8b4c2b2104a634783f5da34791cf0e, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 7e82a358f49f9f74e8e771c137f5ad37, type: 2}
@@ -605,11 +605,11 @@ Tilemap:
     m_Data: {fileID: 1843072240, guid: 5cce261557b95b549b4607ffc70ec1e9, type: 3}
   - m_RefCount: 16
     m_Data: {fileID: -704062486, guid: 5cce261557b95b549b4607ffc70ec1e9, type: 3}
-  - m_RefCount: 2
+  - m_RefCount: 1
     m_Data: {fileID: -1325806688, guid: 5cce261557b95b549b4607ffc70ec1e9, type: 3}
   - m_RefCount: 4
     m_Data: {fileID: -1348150832, guid: 5cce261557b95b549b4607ffc70ec1e9, type: 3}
-  - m_RefCount: 3
+  - m_RefCount: 4
     m_Data: {fileID: 1027886376, guid: 5cce261557b95b549b4607ffc70ec1e9, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 1661631899, guid: 5cce261557b95b549b4607ffc70ec1e9, type: 3}
@@ -811,6 +811,9 @@ MonoBehaviour:
   redSprite: {fileID: 21300000, guid: 7ef9fff5f63199e4a8120f39e44e1d03, type: 3}
   blueSprite: {fileID: 21300000, guid: 4b596dc15b11b084faab4c3cfb4943bd, type: 3}
   greenSprite: {fileID: 21300000, guid: fafe0c11f5b58184083a989572722cc0, type: 3}
+  redSelectedSprite: {fileID: 21300000, guid: e7ecc5f49a9e91a41b822cc836627001, type: 3}
+  blueSelectedSprite: {fileID: 21300000, guid: 05bc25782895bdb418a1f24bcfbc6fe6, type: 3}
+  greenSelectedSprite: {fileID: 21300000, guid: 81481ef7d935ea344a2b008658c09891, type: 3}
   bombCell: {fileID: 0}
   colourBombCell: {fileID: 0}
   originColor: {r: 0, g: 0, b: 0, a: 0}

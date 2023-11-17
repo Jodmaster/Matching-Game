@@ -4,7 +4,6 @@ using static IUsableItem;
 
 public class Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
-    itemType type => itemType.Bomb;
 
     public RectTransform trans => GetComponent<RectTransform>();
 
@@ -51,9 +50,21 @@ public class Bomb : MonoBehaviour, IUsableItem, IDragHandler, IBeginDragHandler,
             trans.position = posToGoTo;
 
             if(cell.GetComponentInChildren<Jewel>() != null && manager.bombsUsed < manager.bombLimit) {
-                transform.SetParent(cell.GetComponentInChildren<Jewel>().transform);
-                GetComponentInParent<Jewel>().setUsableItem(this);
-                manager.bombsUsed++; 
+                //check that the jewel doesn't already contain a bomb
+                Jewel targetJewel = cell.GetComponentInChildren<Jewel>();
+                bool containsBomb = false;
+
+
+                foreach(IUsableItem item in targetJewel.usableItems) {
+                    if(item is Bomb) { containsBomb = true; }
+                }
+
+                if(!containsBomb) {
+                    transform.SetParent(targetJewel.transform);
+                    GetComponentInParent<Jewel>().setUsableItem(this);
+                    manager.bombsUsed++;
+                } else { Destroy(gameObject); }
+
             } else { Destroy(gameObject); }
             
         } else{ Destroy(gameObject); }
