@@ -42,3 +42,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Jewels
+    uniqueID: 3064468897
+    locked: 0
+  - name: Usable_Items
+    uniqueID: 121617133
+    locked: 0

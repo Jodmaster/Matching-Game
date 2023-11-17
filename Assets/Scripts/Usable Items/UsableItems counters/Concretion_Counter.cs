@@ -11,7 +11,6 @@ public class Concretion_Counter : MonoBehaviour
     void Start()
     {
         manager = FindObjectOfType<Game_manager>();
-
         counter = GetComponent<TMP_Text>();
     }
 
