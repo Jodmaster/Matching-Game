@@ -16,11 +16,11 @@ public class Concretion_spawner : MonoBehaviour, IDragHandler, IInitializePotent
 
     // Update is called once per frame
     void Update() {
-        if(!(manager.concreteUsed < manager.concreteLimit)) { button.interactable = false; }
+        if(!(manager.concreteUsed < manager.concreteLimit) || manager.isPaused) { button.interactable = false; } else { button.interactable = true; }
     }
 
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        if(manager.concreteUsed < manager.concreteLimit) {
+        if(manager.concreteUsed < manager.concreteLimit && !manager.isPaused) {
             //on press of the button spawns a bomb prefab 
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);

@@ -17,13 +17,13 @@ public class Fragile_spawner : MonoBehaviour, IDragHandler, IInitializePotential
     // Update is called once per frame
     void Update()
     {
-        if(!(manager.fragileUsed < manager.fragileLimit)) { button.interactable = false; }
+        if(!(manager.fragileUsed < manager.fragileLimit) || manager.isPaused) { button.interactable = false; } else { button.interactable = true; }
     }
 
     public void OnDrag(PointerEventData eventData) {}
 
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        if(manager.fragileUsed < manager.fragileLimit) {
+        if(manager.fragileUsed < manager.fragileLimit && !manager.isPaused) {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);
 

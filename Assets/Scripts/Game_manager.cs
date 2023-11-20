@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public class Game_manager : MonoBehaviour
@@ -63,33 +64,26 @@ public class Game_manager : MonoBehaviour
     private bool shouldBreak;
     private Jewel jewelToBreak;
 
+    public bool isPaused;
+    public bool shouldQuit;
+    private Pause_menu pauseMenu;
+      
+
     // Start is called before the first frame update
     void Start()
     {
-        cells = new Cell[numOfRows, numOfCols];
-        GameSetup();
-
-        turnCounter = 5;
-        
-        bombLimit = 2;
-        bombsUsed = 0;
-
-        colorBombsLimit = 2;
-        colorBombsUsed = 0;
-
-        concreteLimit = 2;
-        concreteUsed = 0;
-
-        fragileLimit = 2;
-        fragileUsed = 0;
+        GameSetup();        
     }
 
     private void GameSetup()
     {
+        cells = new Cell[numOfRows, numOfCols];
+
         //finds both the grid initialization script and level item placement script 
         gridInit = FindObjectOfType<Initialize_Grid>();
         level1 = FindObjectOfType<Level_1_setup>();
         rules = FindObjectOfType<Rule_checks>();
+        pauseMenu = FindObjectOfType<Pause_menu>();
 
         //inializes the grid 
         gridInit.GridInitilization();
@@ -158,7 +152,22 @@ public class Game_manager : MonoBehaviour
             }
 
         }
-        
+
+        //sets the limits and start number for the usable items
+        turnCounter = 5;
+
+        bombLimit = 2;
+        bombsUsed = 0;
+
+        colorBombsLimit = 2;
+        colorBombsUsed = 0;
+
+        concreteLimit = 2;
+        concreteUsed = 0;
+
+        fragileLimit = 2;
+        fragileUsed = 0;
+
     }
 
     public void FixedUpdate() {
@@ -171,7 +180,7 @@ public class Game_manager : MonoBehaviour
 
         //check bombs first so new jewels haven't fallen into empty cells
         if(shouldBomb) { bombExplosion(bombCell); }
-        if(shouldColourBomb) { colourBombExplosion(colourBombCell); }
+        if(shouldColourBomb) { colourBombExplosion(); }
      
         /**
          * having these methods in update lead to what i think are clashes where both a jewel 
@@ -185,69 +194,75 @@ public class Game_manager : MonoBehaviour
         if(currentTurn <= 0) { }
     }
 
-    public void Update()
-    {
+    public void Update() {
+
+        if(pauseMenu.shouldQuit) { quitGame(); }
+        if(pauseMenu.isOpen) { isPaused = true; } else { isPaused = false; }
+        if(pauseMenu.reset) { resetGame(); }
+
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
-        //calls playerTurn on left click
-        if (Input.GetMouseButtonDown(0)) {
-            
-            playerTurn();
+        if(!isPaused) {
+            //calls playerTurn on left click
+            if(Input.GetMouseButtonDown(0)) {
 
-            if (selectedCells[0] != null) {
-                                              
-                rules.getSquareToEliminate(selectedCells[0]);
-                bool hasEliminated = false;
+                playerTurn();
 
-                //if we can eliminate a square get then destroy
-                if (rules.canEliminate && rules.squareElim) {
-                        
-                    //initialize array for holding square
-                    Cell[] squareToEliminate = new Cell[4];
+                if(selectedCells[0] != null) {
 
-                    squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
-                    eliminateJewels(squareToEliminate.ToList<Cell>()) ;
-                    hasEliminated = true;
+                    rules.getSquareToEliminate(selectedCells[0]);
+                    bool hasEliminated = false;
 
-                    rules.squareElim = false;
+                    //if we can eliminate a square get then destroy
+                    if(rules.canEliminate && rules.squareElim) {
 
-                    for(int i = 0; i < selectedCells.Length; i++) {
-                        selectedCells[i] = null;
+                        //initialize array for holding square
+                        Cell[] squareToEliminate = new Cell[4];
+
+                        squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
+                        eliminateJewels(squareToEliminate.ToList<Cell>());
+                        hasEliminated = true;
+
+                        rules.squareElim = false;
+
+                        for(int i = 0; i < selectedCells.Length; i++) {
+                            selectedCells[i] = null;
+                        }
+                    }
+
+                    //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
+                    rules.CheckThreeInARow(selectedCells[0]);
+                    Cell[] cellsToEliminate = new Cell[3];
+
+                    //if we can eliminate a row or a column get then destroy
+                    if(rules.canEliminate && !hasEliminated) {
+                        if(rules.colElim) {
+                            cellsToEliminate = rules.threeInCol;
+                        } else if(rules.rowElim) {
+                            cellsToEliminate = rules.threeInRow;
+                        }
+
+                        //then delete the jewels from the cell
+                        eliminateJewels(cellsToEliminate.ToList<Cell>());
+                        hasEliminated = true;
+
+                        //clears selected cells so that the player can't swap afterwards
+                        for(int i = 0; i < selectedCells.Length; i++) {
+                            selectedCells[i] = null;
+                        }
                     }
                 }
-                    
-                //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
-                rules.CheckThreeInARow(selectedCells[0]);
-                Cell[] cellsToEliminate = new Cell[3];
-
-                //if we can eliminate a row or a column get then destroy
-                if(rules.canEliminate && !hasEliminated) {
-                    if(rules.colElim) {
-                        cellsToEliminate = rules.threeInCol;
-                    } else if(rules.rowElim) {
-                        cellsToEliminate = rules.threeInRow;
-                    }
-
-                    //then delete the jewels from the cell
-                    eliminateJewels(cellsToEliminate.ToList<Cell>());
-                    hasEliminated = true;     
-
-                    //clears selected cells so that the player can't swap afterwards
-                    for(int i = 0; i < selectedCells.Length; i++) {
-                        selectedCells[i] = null;
-                    }
-                }                 
-            }
 
 
-            if(selectedCells[0] != null && selectedCells[1] != null) { 
-                rules.canSwapJewels(selectedCells[0], selectedCells[1]);
-            }
+                if(selectedCells[0] != null && selectedCells[1] != null) {
+                    rules.canSwapJewels(selectedCells[0], selectedCells[1]);
+                }
 
-            if (rules.canSwap) {
-                swapJewels();
+                if(rules.canSwap) {
+                    swapJewels();
+                }
             }
         }
     }
@@ -343,7 +358,8 @@ public class Game_manager : MonoBehaviour
         } else {
             if(selectedCells[0] != null) { selectedCells[0].setSelected(false); }
             if(selectedCells[1] != null) { selectedCells[1].setSelected(false); }
-            Array.Clear(selectedCells, 0, selectedCells.Length); }
+            Array.Clear(selectedCells, 0, selectedCells.Length); 
+        }
 
     }
 
@@ -448,7 +464,7 @@ public class Game_manager : MonoBehaviour
         eliminateJewels(cellsWithJewels);        
     }
 
-    public void colourBombExplosion(Cell origin) {
+    public void colourBombExplosion() {
         
         List<Cell> cellWithCorrectColour = new List<Cell>();
         
@@ -476,5 +492,13 @@ public class Game_manager : MonoBehaviour
         if(cellToConcrete.GetComponentInChildren<Jewel>() != null) {    
             cellToConcrete.setContainedItem(blocker);
         }
+    }
+
+    private void resetGame() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void quitGame() {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Title_Screen");
     }
 }

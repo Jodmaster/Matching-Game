@@ -17,11 +17,11 @@ public class Colour_bomb_spawner : MonoBehaviour, IDragHandler, IInitializePoten
 
     // Update is called once per frame
     void Update(){
-        if(!(manager.colorBombsUsed < manager.colorBombsLimit)) { button.interactable = false; }
+        if(!(manager.colorBombsUsed < manager.colorBombsLimit) || manager.isPaused) { button.interactable = false; } else { button.interactable = true; }
     }
 
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        if(manager.colorBombsUsed < manager.colorBombsLimit) {
+        if(manager.colorBombsUsed < manager.colorBombsLimit && !manager.isPaused) {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);
 

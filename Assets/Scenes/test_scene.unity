@@ -819,6 +819,8 @@ MonoBehaviour:
   originColor: {r: 0, g: 0, b: 0, a: 0}
   shouldConcrete: 0
   concreteCell: {fileID: 0}
+  isPaused: 0
+  shouldQuit: 0
 --- !u!4 &143350168
 Transform:
   m_ObjectHideFlags: 0
@@ -2042,7 +2044,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 0.96404684, b: 0.6745283, a: 1}
     m_PressedColor: {r: 1, g: 0.93217903, b: 0.3820755, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.9622642, g: 0.36765754, b: 0.36765754, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -3526,7 +3528,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 0.96404684, b: 0.6745283, a: 1}
     m_PressedColor: {r: 1, g: 0.93217903, b: 0.3820755, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.9622642, g: 0.36765754, b: 0.36765754, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 0.64705884}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -3935,6 +3937,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ff19fdf2dae366428d6e98d872d38a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isOpen: 0
+  reset: 0
+  shouldQuit: 0
 --- !u!1 &1570707691
 GameObject:
   m_ObjectHideFlags: 0
@@ -4336,7 +4341,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 0.96404684, b: 0.6745283, a: 1}
     m_PressedColor: {r: 1, g: 0.93217903, b: 0.3820755, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.9622642, g: 0.36765754, b: 0.36765754, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -4518,7 +4523,7 @@ MonoBehaviour:
     m_HighlightedColor: {r: 1, g: 0.96404684, b: 0.6745283, a: 1}
     m_PressedColor: {r: 1, g: 0.93217903, b: 0.3820755, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.9622642, g: 0.36765754, b: 0.36765754, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:

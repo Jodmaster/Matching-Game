@@ -14,11 +14,11 @@ public class Bomb_spawn : MonoBehaviour, IDragHandler, IInitializePotentialDragH
     }
 
     public void Update() {
-        if(!(manager.bombsUsed < manager.bombLimit)) { button.interactable = false; }
+        if(!(manager.bombsUsed < manager.bombLimit) || manager.isPaused) { button.interactable = false; } else { button.interactable = true; }
     }
 
     public void OnInitializePotentialDrag(PointerEventData eventData) {
-        if(manager.bombsUsed < manager.bombLimit) {
+        if(manager.bombsUsed < manager.bombLimit && !manager.isPaused) {
             //on press of the button spawns a bomb prefab 
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 spawnPos = new Vector3(mousePos.x, mousePos.y, -0.15f);
