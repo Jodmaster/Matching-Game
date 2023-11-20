@@ -1,8 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class Start_game : MonoBehaviour
 {
@@ -13,6 +13,7 @@ public class Start_game : MonoBehaviour
     void Start()
     {
         Button btn = start_button.GetComponent<Button>();
+        
         start_button.onClick.AddListener(loadLevelOne);
     }
 
@@ -24,5 +25,7 @@ public class Start_game : MonoBehaviour
 
     private void loadLevelOne() {
         Debug.Log("Level 1 loading");
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("test_scene");
     }
 }
