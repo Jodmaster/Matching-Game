@@ -306,7 +306,7 @@ public class Game_manager : MonoBehaviour
                 }
 
                 if(jewelToDestroy.GetComponentInChildren<Concretion>()) {
-                    Concretion(jewelToDestroy.GetComponentInParent<Cell>());
+                    concretion(jewelToDestroy.GetComponentInParent<Cell>());
                 }
               
                 Destroy(jewelToDestroy.gameObject);
@@ -472,7 +472,7 @@ public class Game_manager : MonoBehaviour
         eliminateJewels(cellWithCorrectColour);
     }
 
-    public void Concretion(Cell cellToConcrete) {
+    public void concretion(Cell cellToConcrete) {
         if(cellToConcrete.GetComponentInChildren<Jewel>() != null) {    
             cellToConcrete.setContainedItem(blocker);
         }
