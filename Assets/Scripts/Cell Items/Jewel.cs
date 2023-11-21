@@ -19,6 +19,8 @@ public class Jewel : MonoBehaviour, IGridItem {
     public Sprite selectedSprite;
 
     public LayerMask jewelLayer;
+
+    
     
 
     // Start is called before the first frame update
@@ -41,8 +43,10 @@ public class Jewel : MonoBehaviour, IGridItem {
         if(currentParent.isSelected) { rend.sprite = selectedSprite; } else { rend.sprite = sprite; }
 
         //checks if the jewel should fall and if it's already in the shouldfall array
-        if(checkJewelBelow() && !manager.shouldFall.Contains(this)) {
-            manager.shouldFall.Add(this);
+        if(!manager.isLerping) {
+            if(checkJewelBelow() && !manager.shouldFall.Contains(this)) {
+                manager.shouldFall.Add(this);
+            }
         }
 
         //switches the position of items so they aren't overlayed on top of each other

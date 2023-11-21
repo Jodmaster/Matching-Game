@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -68,7 +69,8 @@ public class Game_manager : MonoBehaviour
     public bool isPaused;
     public bool shouldQuit;
     private Pause_menu pauseMenu;
-      
+
+    public bool isLerping;
 
     // Start is called before the first frame update
     void Start()
@@ -206,7 +208,7 @@ public class Game_manager : MonoBehaviour
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
-        if(!isPaused) {
+        if(!isPaused && !isLerping) {
             //calls playerTurn on left click
             if(Input.GetMouseButtonDown(0)) {
 
@@ -282,11 +284,25 @@ public class Game_manager : MonoBehaviour
                     //changes parents of the jewel and then updates the transform
                     cellItem1.SetParent(selectedCells[1].transform);
                     cellItem1.GetComponent<Jewel>().currentParent = selectedCells[1];
-                    cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
+
+                    Transform jewelToMove = cellItem1.GetComponent<Jewel>().transform;
+                    Vector3 finalPos = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
+
+                    
+                    //cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
+                    
+                    StartCoroutine(Lerp(jewelToMove.position, finalPos, jewelToMove, false));
 
                     cellItem2.SetParent(selectedCells[0].transform);
                     cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
-                    cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+                    
+                    jewelToMove = cellItem2.GetComponent<Jewel>().transform;
+                    finalPos = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+
+                    
+                    //cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+
+                    StartCoroutine(Lerp(jewelToMove.position, finalPos, jewelToMove, false));
 
                     turnCounter--;
 
@@ -384,53 +400,61 @@ public class Game_manager : MonoBehaviour
     }
 
     public void jewelFall() {
-        
-        //loops through the should fall array getting the new parent and adjusting to the right transform
-        for(int i = 0; i < shouldFall.Count; i++) {
 
-            Jewel currentJewel = shouldFall[i];
-            Cell currentParent = currentJewel.currentParent;
-            Cell goalCell;
-            
-            goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
+        if(!isPaused && !isLerping) {
+            //loops through the should fall array getting the new parent and adjusting to the right transform
+            for(int i = 0; i < shouldFall.Count; i++) {
 
-            if (currentJewel != null)
-            {
-                currentJewel.transform.SetParent(goalCell.transform);
-                currentJewel.currentParent = goalCell;
+                Jewel currentJewel = shouldFall[i];
+                Cell currentParent = currentJewel.currentParent;
+                Cell goalCell;
 
-                Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
-                currentJewel.transform.position = posToChangeTo;
+                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
 
-                //checks if the jewel has the fragile item attached and then saves it for fixed update to destroy
-                if(currentJewel.GetComponentInChildren<Fragile>() != null) {
-                    jewelToBreak = currentJewel; 
-                    shouldBreak = true;
+                if(currentJewel != null) {
+                    currentJewel.transform.SetParent(goalCell.transform);
+                    currentJewel.currentParent = goalCell;
+                    
+                    Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
+                    //currentJewel.transform.position = posToChangeTo;
+
+                    StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
+
+                    /**checks if the jewel has the fragile item attached and then saves it for fixed update to destroy
+                    if(currentJewel.GetComponentInChildren<Fragile>() != null) {
+                        jewelToBreak = currentJewel;
+                        shouldBreak = true;
+                    }
+                    */
+
+                    shouldFall.Remove(currentJewel);
                 }
 
-                shouldFall.Remove(currentJewel);                
-            }           
-        }    
+
+            }
+        }
     }
 
     public void sandFall() {
         
-        //loops through the sand to fall array checks which direction it should fall and then updates parent and transform 
-        for(int i = 0; i < sandToFall.Count; i++) {
-            Sand currentSand = sandToFall[i];
-            Cell currentParent = currentSand.currentParent;
-            Cell goalCell;
+        if(!isLerping && !isPaused) {
+            //loops through the sand to fall array checks which direction it should fall and then updates parent and transform 
+            for(int i = 0; i < sandToFall.Count; i++) {
+                Sand currentSand = sandToFall[i];
+                Cell currentParent = currentSand.currentParent;
+                Cell goalCell;
 
-            if(currentSand.fallDown) {
-                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-                if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
-            } else if(currentSand.fallLeft) {
-                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] - 1));
-                if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
-            } else if(currentSand.fallRight) {
-                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] + 1));
-                if(goalCell) { SetParentAndTransform(currentSand, goalCell); }   
-            }                    
+                if(currentSand.fallDown) {
+                    goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
+                    if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+                } else if(currentSand.fallLeft) {
+                    goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] - 1));
+                    if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+                } else if(currentSand.fallRight) {
+                    goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] + 1));
+                    if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+                }
+            }
         }
 
         //helper method that sets new parent and transform
@@ -505,4 +529,39 @@ public class Game_manager : MonoBehaviour
     private void quitGame() {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Title_Screen");
     }
+
+    IEnumerator Lerp(Vector3 startPos, Vector3 endPos, Transform moveable, bool falling) {
+
+        float timeElap = 0;
+        float lerpDuration;
+
+        if(falling) { lerpDuration = 0.25f; } else { lerpDuration = 0.5f; }
+
+        while(timeElap < lerpDuration) {
+            
+            isLerping = true;
+
+            if(moveable != null) {
+                moveable.position = Vector3.Lerp(startPos, endPos, timeElap / lerpDuration);
+                timeElap += Time.deltaTime;
+            } else {
+                timeElap = lerpDuration;
+            }
+
+            yield return null;
+        }
+        
+        if(moveable != null) {
+            moveable.position = endPos;
+            if(moveable.GetComponentInChildren<Fragile>() != null) {
+                jewelToBreak = moveable.GetComponent<Jewel>();
+                shouldBreak = true;
+            }
+        }
+
+        
+        
+        isLerping = false;       
+    }
+
 }
