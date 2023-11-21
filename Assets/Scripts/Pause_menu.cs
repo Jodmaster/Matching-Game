@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Pause_menu : MonoBehaviour
 {
 
-    Button button;
+    Button pausebutton;
     Button resumeButton;
     Button resetButton;
     Button quitButton;
@@ -16,6 +14,7 @@ public class Pause_menu : MonoBehaviour
     GameObject menu;
     GameObject quitObject;
 
+    //bools for game_manager
     public bool isOpen;
     public bool reset;
     public bool shouldQuit;
@@ -23,9 +22,8 @@ public class Pause_menu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {               
-        menu = gameObject.transform.GetChild(0).gameObject;
-        button = GetComponent<Button>();
-        
+        //get references to all the buttons required by the pause menu 
+        menu = gameObject.transform.GetChild(0).gameObject;               
         resumeObject = GameObject.Find("Resume_Level");
         resetObject = GameObject.Find("Reset_Level");
         quitObject = GameObject.Find("Quit_Level");
@@ -33,19 +31,19 @@ public class Pause_menu : MonoBehaviour
         resumeButton = resumeObject.GetComponent<Button>();
         resetButton = resetObject.GetComponent<Button>();
         quitButton = quitObject.GetComponent<Button>();
+        pausebutton = GetComponent<Button>();
 
         menu.SetActive(false);
         isOpen = false;
 
-        button.onClick.AddListener(showMenu);
+        //set up the on click listeners 
+        pausebutton.onClick.AddListener(showMenu);
         resumeButton.onClick.AddListener(resumeGame);
         resetButton.onClick.AddListener(resetGame);
         quitButton.onClick.AddListener(quitGame);
     }
-
-    // Update is called once per frame
-    void Update() {}  
     
+    //methods setting bool values for button conditions, these bools are then used by the game_manager to execute actions
     private void showMenu() {
         isOpen = true;
         menu.SetActive(true);

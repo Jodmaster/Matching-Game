@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class Game_manager : MonoBehaviour
 {
     public int turnCounter;
@@ -196,9 +195,10 @@ public class Game_manager : MonoBehaviour
 
     public void Update() {
 
-        if(pauseMenu.shouldQuit) { quitGame(); }
+        //checking for pause menu onClick events and executing commands       
         if(pauseMenu.isOpen) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset) { resetGame(); }
+        if(pauseMenu.shouldQuit) { quitGame(); }
 
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
@@ -270,31 +270,33 @@ public class Game_manager : MonoBehaviour
     public void swapJewels() {
         //gets the children of the selected cells
         if(selectedCells[0] != null && selectedCells[1] != null) {
-            Transform cellItem1 = selectedCells[0].transform.GetChild(0);
-            Transform cellItem2 = selectedCells[1].transform.GetChild(0);
+            if(selectedCells[0].transform.childCount > 0 && selectedCells[1].transform.childCount > 0) { 
+                
+                Transform cellItem1 = selectedCells[0].transform.GetChild(0);
+                Transform cellItem2 = selectedCells[1].transform.GetChild(0);
 
-            //checks that the got item is a jewel 
-            if(cellItem1.GetComponent<Jewel>() != null && cellItem2.GetComponent<Jewel>() != null) {
-                //changes parents of the jewel and then updates the transform
-                cellItem1.SetParent(selectedCells[1].transform);
-                cellItem1.GetComponent<Jewel>().currentParent = selectedCells[1];
-                cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
+                //checks that the got item is a jewel 
+                if(cellItem1.GetComponent<Jewel>() != null && cellItem2.GetComponent<Jewel>() != null) {
+                    //changes parents of the jewel and then updates the transform
+                    cellItem1.SetParent(selectedCells[1].transform);
+                    cellItem1.GetComponent<Jewel>().currentParent = selectedCells[1];
+                    cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
 
-                cellItem2.SetParent(selectedCells[0].transform);
-                cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
-                cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
+                    cellItem2.SetParent(selectedCells[0].transform);
+                    cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
+                    cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
 
+                    turnCounter--;
 
-                //deselects cells so sprites react properly
-                selectedCells[0].setSelected(false);
-                selectedCells[1].setSelected(false);
+                    //deselects cells so sprites react properly
+                    selectedCells[0].setSelected(false);
+                    selectedCells[1].setSelected(false);
 
-                selectedCells[0] = null;
-                selectedCells[1] = null;
+                    selectedCells[0] = null;
+                    selectedCells[1] = null;
+                }
             }
-        }
-        
-        turnCounter--;
+        }     
     }
 
     public void eliminateJewels(List<Cell> cellsToElim) {

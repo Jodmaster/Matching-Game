@@ -6,23 +6,40 @@ using System.Collections;
 
 public class Start_game : MonoBehaviour {
 
-    public Button start_button;
+    public Button startButton;
+    public GameObject levelSelectContainer; 
+    
+    public Button level1Start;
+    public Button level2Start;
+    public Button level3Start;
+
+    private bool levelSelectOpen;
 
     // Start is called before the first frame update
     void Start() {
-        Button btn = start_button.GetComponent<Button>();
 
-        start_button.onClick.AddListener(loadLevelOne);
+        levelSelectContainer = GameObject.Find("Level_Select");
+        startButton = GameObject.Find("start_game").GetComponent<Button>();
+        level1Start = GameObject.Find("Level_1_Start").GetComponent<Button>();
+
+        startButton.onClick.AddListener(openLevelSelect);
+        level1Start.onClick.AddListener(loadLevelOne);
+
+        levelSelectOpen = false;
+        levelSelectContainer.SetActive(false);
     }
 
     // Update is called once per frame
     void Update() {
+        if(levelSelectOpen) { levelSelectContainer.SetActive(true); }
+    }
 
+    private void openLevelSelect() {
+        levelSelectOpen = true;
     }
 
     private void loadLevelOne() {
         Debug.Log("Level 1 loading");
-
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("test_scene");
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Level_1");
     }
 }
