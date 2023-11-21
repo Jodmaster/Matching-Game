@@ -197,7 +197,7 @@ public class Game_manager : MonoBehaviour
         if(currentTurn <= 0) { }
     }
 
-    public void Update() {
+    public void Update() {       
 
         //checking for pause menu onClick events and executing commands       
         if(pauseMenu.isOpen) { isPaused = true; } else { isPaused = false; }
@@ -464,7 +464,9 @@ public class Game_manager : MonoBehaviour
             currentSand.currentParent = goalCell;
 
             Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
-            currentSand.transform.position = posToChangeTo;
+
+            StartCoroutine(Lerp(currentSand.transform.position, posToChangeTo, currentSand.transform, true));
+            // currentSand.transform.position = posToChangeTo;
 
             sandToFall.Remove(currentSand);
         
@@ -557,9 +559,7 @@ public class Game_manager : MonoBehaviour
                 jewelToBreak = moveable.GetComponent<Jewel>();
                 shouldBreak = true;
             }
-        }
-
-        
+        }      
         
         isLerping = false;       
     }
