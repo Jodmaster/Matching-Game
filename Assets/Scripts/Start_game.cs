@@ -21,9 +21,11 @@ public class Start_game : MonoBehaviour {
         levelSelectContainer = GameObject.Find("Level_Select");
         startButton = GameObject.Find("start_game").GetComponent<Button>();
         level1Start = GameObject.Find("Level_1_Start").GetComponent<Button>();
+        level2Start = GameObject.Find("Level_2_Start").GetComponent<Button>();
 
         startButton.onClick.AddListener(openLevelSelect);
         level1Start.onClick.AddListener(loadLevelOne);
+        level2Start.onClick.AddListener(loadlevelTwo);
 
         levelSelectOpen = false;
         levelSelectContainer.SetActive(false);
@@ -41,5 +43,9 @@ public class Start_game : MonoBehaviour {
     private void loadLevelOne() {
         Debug.Log("Level 1 loading");
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Level_1");
+    }
+
+    private void loadlevelTwo() {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Level_2");
     }
 }

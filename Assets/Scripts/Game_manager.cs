@@ -40,7 +40,7 @@ public class Game_manager : MonoBehaviour
     [SerializeField] public int numOfCols;
     [SerializeField] public int numOfRows;
 
-    public Level_1_setup level1;
+    public ILevel_Setup level;
     public Initialize_Grid gridInit;
     public Rule_checks rules;
 
@@ -82,7 +82,7 @@ public class Game_manager : MonoBehaviour
 
         //finds both the grid initialization script and level item placement script 
         gridInit = FindObjectOfType<Initialize_Grid>();
-        level1 = FindObjectOfType<Level_1_setup>();
+        level = GetComponentInChildren<ILevel_Setup>();
         rules = FindObjectOfType<Rule_checks>();
         pauseMenu = FindObjectOfType<Pause_menu>();
 
@@ -100,14 +100,14 @@ public class Game_manager : MonoBehaviour
             for (int colCount = 0; colCount < numOfCols; colCount++)
             {
                 Cell cellToSet = cellsTemp[cellCounter];
-                switch (level1.itemToContain[rowCount, colCount])
+                switch (level.itemToContain[rowCount, colCount])
                 {
                     case 0:
 
                         cellToSet.setContainedItem(jewel);
                         Jewel jewelToSet = (Jewel)cellToSet.containedItem;
                         
-                        switch(level1.jemColorMap[rowCount, colCount]){  
+                        switch(level.jewelColorMap[rowCount, colCount]){  
                             case 0:
                                 jewelToSet.jewelColor = Color.red;
                                 jewelToSet.sprite = redSprite;

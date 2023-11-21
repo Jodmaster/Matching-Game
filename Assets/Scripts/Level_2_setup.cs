@@ -1,0 +1,42 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Level_2_setup : MonoBehaviour, ILevel_Setup
+{
+    /**
+     * for the jewel color map:
+     * 
+     * 0 for red jewels
+     * 1 for green jewels 
+     * 2 for blue jewels
+     */
+    public int[,] _jewelColorMap =
+           {{2,1,1,0,1,2},
+            {1,0,0,1,0,1},
+            {2,2,2,2,2,2},
+            {1,2,2,2,1,1},
+            {0,2,2,1,0,0},
+            {0,1,0,2,0,0}};
+
+    /**
+     * for the item map:
+     * 
+     * 0 for jewels
+     * 1 for blocker 
+     * 2 for sand
+     */
+    public int[,] _itemToContain =
+            {{0,2,0,2,0,0},
+            {0,0,2,0,0,0},
+            {0,2,0,0,2,0},
+            {1,1,0,0,1,1},
+            {0,2,0,0,0,0},
+            {0,0,0,0,0,0}};
+
+
+    public int[,] jewelColorMap { get => _jewelColorMap; }
+
+    public int[,] itemToContain { get => _itemToContain; }
+
+}
