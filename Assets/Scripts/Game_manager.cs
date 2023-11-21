@@ -21,6 +21,8 @@ public class Game_manager : MonoBehaviour
     public int fragileUsed;
     public int fragileLimit;
 
+    public GameObject LevelIni;
+
     public Cell[,] cells;
     public Cell[] selectedCells;
 

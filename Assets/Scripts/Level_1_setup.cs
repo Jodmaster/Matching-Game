@@ -1,10 +1,24 @@
 using UnityEngine;
 
-public class Level_1_setup : MonoBehaviour
+public class Level_1_setup : MonoBehaviour, ILevel_Setup
 {
     public int[,] itemToContain;
     public int[,] jemColorMap;
 
+    public int[,] jewelColorMap { set {
+            itemToContain = new int[6, 6] {
+            {0,2,0,2,0,0},
+            {0,0,2,1,0,0},
+            {0,0,1,1,0,0},
+            {0,0,0,1,2,0},
+            {0,2,0,0,0,0},
+            {0,0,0,0,0,0}};
+        } 
+    }
+    
+    int[,] ILevel_Setup.itemToContain { set { return itemToContain; }}
+
+    
     public void Awake()
     {
         //contains which itmes should go where this array is mirrored vertically to where the items will actually end up
@@ -20,10 +34,7 @@ public class Level_1_setup : MonoBehaviour
             {0,0,0,0,0,0}
         };
 
-        //controls gem color
-        //0 is red
-        //1 is blue
-        //2 is green
+
         jemColorMap = new int[6, 6]{
             {0,0,2,0,1,0},
             {1,2,0,1,1,1},
@@ -33,6 +44,7 @@ public class Level_1_setup : MonoBehaviour
             {0,0,0,2,0,0}
         };
     }
+    
 }
 
     

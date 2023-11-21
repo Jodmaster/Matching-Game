@@ -794,6 +794,7 @@ MonoBehaviour:
   concreteLimit: 0
   fragileUsed: 0
   fragileLimit: 0
+  LevelIni: {fileID: 0}
   selectedCells:
   - {fileID: 0}
   - {fileID: 0}
@@ -805,7 +806,7 @@ MonoBehaviour:
   sandToFall: []
   numOfCols: 6
   numOfRows: 6
-  level1: {fileID: 0}
+  level1: {fileID: 125157667}
   gridInit: {fileID: 0}
   rules: {fileID: 0}
   redSprite: {fileID: 21300000, guid: 7ef9fff5f63199e4a8120f39e44e1d03, type: 3}
