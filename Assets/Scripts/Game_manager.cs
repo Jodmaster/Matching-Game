@@ -69,6 +69,7 @@ public class Game_manager : MonoBehaviour
     public bool isPaused;
     public bool shouldQuit;
     private Pause_menu pauseMenu;
+    private Game_end gameEndMenu;
 
     public bool isLerping;
 
@@ -87,6 +88,7 @@ public class Game_manager : MonoBehaviour
         level = GetComponentInChildren<ILevel_Setup>();
         rules = FindObjectOfType<Rule_checks>();
         pauseMenu = FindObjectOfType<Pause_menu>();
+        gameEndMenu = FindObjectOfType<Game_end>();
 
         //inializes the grid 
         gridInit.GridInitilization();
@@ -197,12 +199,16 @@ public class Game_manager : MonoBehaviour
         if(currentTurn <= 0) { }
     }
 
-    public void Update() {       
+    public void Update() {
 
         //checking for pause menu onClick events and executing commands       
         if(pauseMenu.isOpen) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit) { quitGame(); }
+
+        if(turnCounter == 0 && !eliminateSearch()) {
+            endGame(false);
+        }
 
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
@@ -259,7 +265,6 @@ public class Game_manager : MonoBehaviour
                     }
                 }
 
-
                 if(selectedCells[0] != null && selectedCells[1] != null) {
                     rules.canSwapJewels(selectedCells[0], selectedCells[1]);
                 }
@@ -267,7 +272,7 @@ public class Game_manager : MonoBehaviour
                 if(rules.canSwap) {
                     swapJewels();
                 }
-            }
+            }          
         }
     }
 
@@ -305,6 +310,8 @@ public class Game_manager : MonoBehaviour
                     StartCoroutine(Lerp(jewelToMove.position, finalPos, jewelToMove, false));
 
                     turnCounter--;
+
+                    rules.canSwap = false;
 
                     //deselects cells so sprites react properly
                     selectedCells[0].setSelected(false);
@@ -416,21 +423,11 @@ public class Game_manager : MonoBehaviour
                     currentJewel.currentParent = goalCell;
                     
                     Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
-                    //currentJewel.transform.position = posToChangeTo;
 
                     StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
 
-                    /**checks if the jewel has the fragile item attached and then saves it for fixed update to destroy
-                    if(currentJewel.GetComponentInChildren<Fragile>() != null) {
-                        jewelToBreak = currentJewel;
-                        shouldBreak = true;
-                    }
-                    */
-
                     shouldFall.Remove(currentJewel);
                 }
-
-
             }
         }
     }
@@ -466,10 +463,8 @@ public class Game_manager : MonoBehaviour
             Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
 
             StartCoroutine(Lerp(currentSand.transform.position, posToChangeTo, currentSand.transform, true));
-            // currentSand.transform.position = posToChangeTo;
 
-            sandToFall.Remove(currentSand);
-        
+            sandToFall.Remove(currentSand);       
         }
     }
 
@@ -532,13 +527,107 @@ public class Game_manager : MonoBehaviour
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Title_Screen");
     }
 
+    private void endGame(bool wonGame) {
+        gameEndMenu.showEnd();
+        
+    }
+
+    private bool swapSearch() {
+
+        //get all cells with jewels
+        List<Cell> cellsToCheck = findCellsWithJewels();
+        bool canSwap = false;
+             
+        //we first loop through cells with jewels to try and find the valid swaps
+        for(int count = 0; count < cellsToCheck.Count; count++) {
+            
+            Cell[] potentialSwaps = rules.validCellSwaps(cellsToCheck[count]);
+
+            //if there is any valid swaps found we set canSwap to true and break
+            for(int swapCheck = 0; swapCheck < potentialSwaps.Length; swapCheck++) {
+                if(cellsToCheck.Contains(potentialSwaps[swapCheck])) { 
+                    canSwap = true; break;
+                }
+            }
+        }
+
+       
+
+        //if we can swap or eliminate return true
+        if(canSwap) { return true; } else { return false; }    
+    }
+
+    private bool eliminateSearch() {
+        
+        List<Cell> cellsToCheck = findCellsWithJewels();
+        bool canEliminate = false;
+        
+        //next we check for elimination of squares 
+        for(int elimCheck = 0; elimCheck < cellsToCheck.Count; elimCheck++) {
+
+            rules.getSquareToEliminate(cellsToCheck[elimCheck]);
+
+            //if we can eliminate a square set canEliminate to true
+            if(rules.canEliminate && rules.squareElim) {
+                canEliminate = true;
+                rules.squareElim = false;
+                rules.canEliminate = false;
+                break;
+            }
+
+            rules.CheckThreeInARow(cellsToCheck[elimCheck]);
+
+            //if we can eliminate a row or col set canEliminate to true
+            if(rules.canEliminate) {
+                if(rules.colElim) {
+                    canEliminate = true;
+
+                    //need to reset these values as the checkThreeInARow method sets them
+                    rules.colElim = false;
+                    rules.canEliminate = false;
+                    break;
+                } else if(rules.rowElim) {
+                    canEliminate = true;
+                    rules.rowElim = false;
+                    rules.canEliminate = false;
+                    break;
+                }
+            }
+        }
+
+        if(canEliminate) { return true; } else { return false; }
+    }
+
+    private List<Cell> findCellsWithJewels() {
+        
+        //init List to store cellswithJewels
+        List<Cell> cellsWithJewls = new List<Cell>();
+         
+        //loops through all cells and checks if they contain a jewel if so add them to the return list
+        for(int rows = 0; rows < numOfRows; rows++) {
+            for(int cols = 0; cols < numOfCols; cols++) {
+                
+                Cell cellToCheck = cells[rows, cols];
+                
+                if(cellToCheck.GetComponentInChildren<Jewel>() != null) {
+                    cellsWithJewls.Add(cellToCheck);
+                }
+            }
+        }
+        
+        return cellsWithJewls;
+    }
+
     IEnumerator Lerp(Vector3 startPos, Vector3 endPos, Transform moveable, bool falling) {
 
+        //set the time that has passed and init the total time of lerp
         float timeElap = 0;
         float lerpDuration;
 
+        //if the item is falling it should lerp faster dictated by the passed bool
         if(falling) { lerpDuration = 0.25f; } else { lerpDuration = 0.5f; }
 
+        //Lerp
         while(timeElap < lerpDuration) {
             
             isLerping = true;
@@ -552,7 +641,8 @@ public class Game_manager : MonoBehaviour
 
             yield return null;
         }
-        
+
+        //moved this from jewel fall to here as there were problems with jewels not breaking due to isLerping         
         if(moveable != null) {
             moveable.position = endPos;
             if(moveable.GetComponentInChildren<Fragile>() != null) {

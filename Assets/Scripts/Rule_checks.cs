@@ -38,8 +38,6 @@ public class Rule_checks : MonoBehaviour
 
     public Cell[] validCellSwaps(Cell cell) {
 
-        Debug.Log("finding valid cell swaps");
-
         //intialises return array
         Cell[] validCells = new Cell[4];
 
