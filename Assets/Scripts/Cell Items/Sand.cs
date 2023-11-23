@@ -36,7 +36,7 @@ public class Sand : MonoBehaviour, IGridItem
 
 
     public bool shouldFall() {
-        if(!manager.isLerping) {
+        if(!manager.isLerping && !manager.isFalling) {
             //offsets for the origin of the raycast that the sand does
             Vector3 downOffset = new Vector3(0, 1, 0);
             Vector3 diagonalOffset = new Vector3(1.5f, 0, 0);

@@ -74,6 +74,7 @@ public class Game_manager : MonoBehaviour
     private Game_end gameEndMenu;
 
     public bool isLerping;
+    public bool isFalling;
     public bool gameEnded = false;
 
     // Start is called before the first frame update
@@ -211,7 +212,7 @@ public class Game_manager : MonoBehaviour
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
 
-        if(!isLerping && !isPaused)
+        if(!isLerping && !isPaused && !isFalling)
         {
             if(turnCounter == 0 && !eliminateSearch()) {
                 endGame(false);
@@ -230,7 +231,7 @@ public class Game_manager : MonoBehaviour
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
 
-        if(!isPaused && !isLerping) {
+        if(!isPaused && !isLerping && !isFalling) {
             //calls playerTurn on left click
             if(Input.GetMouseButtonDown(0)) {
 
@@ -424,7 +425,7 @@ public class Game_manager : MonoBehaviour
 
     public void jewelFall() {
 
-        if(!isPaused && !isLerping) {
+        if(!isPaused && !isLerping && !isFalling) {
             //loops through the should fall array getting the new parent and adjusting to the right transform
             for(int i = 0; i < shouldFall.Count; i++) {
 
@@ -450,7 +451,7 @@ public class Game_manager : MonoBehaviour
 
     public void sandFall() {
         
-        if(!isLerping && !isPaused) {
+        if(!isLerping && !isPaused && !isFalling) {
             //loops through the sand to fall array checks which direction it should fall and then updates parent and transform 
             for(int i = 0; i < sandToFall.Count; i++) {
                 Sand currentSand = sandToFall[i];
@@ -655,6 +656,10 @@ public class Game_manager : MonoBehaviour
                 timeElap = lerpDuration;
             }
 
+            if(falling) {
+                isFalling = true;
+            }
+
             yield return null;
         }
 
@@ -665,8 +670,10 @@ public class Game_manager : MonoBehaviour
                 jewelToBreak = moveable.GetComponent<Jewel>();
                 shouldBreak = true;
             }
-        }      
-        
+        }
+
+
+        isFalling = false;
         isLerping = false;       
     }
 

@@ -42,7 +42,7 @@ public class Jewel : MonoBehaviour, IGridItem {
         if(currentParent.isSelected) { rend.sprite = selectedSprite; } else { rend.sprite = sprite; }
 
         //checks if the jewel should fall and if it's already in the shouldfall array
-        if(!manager.isLerping) {
+        if(!manager.isLerping && !manager.isFalling) {
             if(checkJewelBelow() && !manager.shouldFall.Contains(this)) {
                 manager.shouldFall.Add(this);
             }
