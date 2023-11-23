@@ -1,5 +1,3 @@
-using System.IO.IsolatedStorage;
-using Unity.Properties;
 using UnityEngine;
 
 public class Rule_checks : MonoBehaviour

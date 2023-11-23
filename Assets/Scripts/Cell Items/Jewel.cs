@@ -1,9 +1,8 @@
 
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static IGridItem;
-using static IUsableItem;
+
 
 public class Jewel : MonoBehaviour, IGridItem {
     gridItemType IGridItem.itemType => gridItemType.Jewel;
