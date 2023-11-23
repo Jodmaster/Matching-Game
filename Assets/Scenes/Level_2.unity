@@ -822,6 +822,7 @@ MonoBehaviour:
   isPaused: 0
   shouldQuit: 0
   isLerping: 0
+  gameEnded: 0
 --- !u!4 &143350168
 Transform:
   m_ObjectHideFlags: 0
@@ -1773,9 +1774,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 121617133
+  m_SortingLayer: 2
+  m_SortingOrder: 20
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &473668958
 GameObject:
@@ -3352,9 +3353,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 121617133
+  m_SortingLayer: 2
+  m_SortingOrder: 20
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &1023261666
 GameObject:

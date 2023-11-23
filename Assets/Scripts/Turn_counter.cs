@@ -13,7 +13,7 @@ public class Turn_counter : MonoBehaviour
     {
         manager = FindObjectOfType<Game_manager>();
         number = GetComponent<TMP_Text>();
-                    
+        number.color = Color.white;      
     }
 
     // Update is called once per frame
@@ -21,5 +21,7 @@ public class Turn_counter : MonoBehaviour
     {
         counter = manager.turnCounter;
         number.SetText(counter.ToString());
+
+        if(counter < 3) { number.color = Color.red; }
     }
 }

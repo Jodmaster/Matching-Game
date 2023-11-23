@@ -211,20 +211,21 @@ public class Game_manager : MonoBehaviour
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
 
-        if(turnCounter == 0 && !eliminateSearch()) {                                  
-            endGame(false);           
+        if(!isLerping && !isPaused)
+        {
+            if(turnCounter == 0 && !eliminateSearch()) {
+                endGame(false);
+            }
+
+            if(findCellsWithJewels().Count < 4 && !eliminateSearch() && !swapSearch()) {
+                endGame(false);
+            }
+
+            if(findCellsWithJewels().Count == 0) {
+                endGame(true);
+            }
         }
-
-        if(findCellsWithJewels().Count < 3 && !eliminateSearch() && !swapSearch()) {
-            endGame(false);
-        }
-
-        if(findCellsWithJewels().Count == 0) {
-            endGame(true);
-        }
-
-
-
+        
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
@@ -284,7 +285,7 @@ public class Game_manager : MonoBehaviour
                     rules.canSwapJewels(selectedCells[0], selectedCells[1]);
                 }
 
-                if(rules.canSwap) {
+                if(rules.canSwap && turnCounter != 0) {
                     swapJewels();
                 }
             }          
