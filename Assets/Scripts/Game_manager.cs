@@ -67,11 +67,14 @@ public class Game_manager : MonoBehaviour
     private Jewel jewelToBreak;
 
     public bool isPaused;
+    
     public bool shouldQuit;
+    
     private Pause_menu pauseMenu;
     private Game_end gameEndMenu;
 
     public bool isLerping;
+    public bool gameEnded = false;
 
     // Start is called before the first frame update
     void Start()
@@ -201,14 +204,26 @@ public class Game_manager : MonoBehaviour
 
     public void Update() {
 
-        //checking for pause menu onClick events and executing commands       
-        if(pauseMenu.isOpen) { isPaused = true; } else { isPaused = false; }
-        if(pauseMenu.reset) { resetGame(); }
-        if(pauseMenu.shouldQuit) { quitGame(); }
+        if(gameEnded) { pauseMenu.disableButton(); }
 
-        if(turnCounter == 0 && !eliminateSearch()) {
+        //checking for pause menu onClick events and executing commands       
+        if(pauseMenu.isOpen || gameEndMenu.isOpen) { isPaused = true; } else { isPaused = false; }
+        if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
+        if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
+
+        if(turnCounter == 0 && !eliminateSearch()) {                                  
+            endGame(false);           
+        }
+
+        if(findCellsWithJewels().Count < 3 && !eliminateSearch() && !swapSearch()) {
             endGame(false);
         }
+
+        if(findCellsWithJewels().Count == 0) {
+            endGame(true);
+        }
+
+
 
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
@@ -528,8 +543,8 @@ public class Game_manager : MonoBehaviour
     }
 
     private void endGame(bool wonGame) {
-        gameEndMenu.showEnd();
-        
+        gameEndMenu.showEnd(wonGame);
+        gameEnded = true;
     }
 
     private bool swapSearch() {

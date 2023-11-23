@@ -42,9 +42,12 @@ public class Pause_menu : MonoBehaviour
         resetButton.onClick.AddListener(resetGame);
         quitButton.onClick.AddListener(quitGame);
     }
-    
+
+    public void disableButton() {
+        pausebutton.enabled = false;
+    }
     //methods setting bool values for button conditions, these bools are then used by the game_manager to execute actions
-    private void showMenu() {
+    private void showMenu() {       
         isOpen = true;
         menu.SetActive(true);
     }
