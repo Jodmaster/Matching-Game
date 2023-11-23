@@ -34,6 +34,9 @@ public class Game_end : MonoBehaviour
         quitButton = quitObject.GetComponent<Button>();
 
         menu.SetActive(false);
+        winObject.SetActive(false);
+        loseObject.SetActive(false);
+
         isOpen = false;       
 
         resetButton.onClick.AddListener(resetGame);
