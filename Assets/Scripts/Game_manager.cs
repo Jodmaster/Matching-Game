@@ -207,13 +207,17 @@ public class Game_manager : MonoBehaviour
 
         if(gameEnded) { pauseMenu.disableButton(); }
 
-        //checking for pause menu onClick events and executing commands       
+        //checking for pause menu and end game onClick events and executing commands       
         if(pauseMenu.isOpen || gameEndMenu.isOpen) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
 
         if(!isLerping && !isPaused && !isFalling)
         {
+            if(findCellsWithJewels().Count == 0) {
+                endGame(true);
+            }
+
             if(turnCounter == 0 && !eliminateSearch()) {
                 endGame(false);
             }
@@ -221,10 +225,7 @@ public class Game_manager : MonoBehaviour
             if(findCellsWithJewels().Count < 4 && !eliminateSearch() && !swapSearch()) {
                 endGame(false);
             }
-
-            if(findCellsWithJewels().Count == 0) {
-                endGame(true);
-            }
+           
         }
         
         //if there are cells in the selected array set them to selected
@@ -245,10 +246,8 @@ public class Game_manager : MonoBehaviour
                     //if we can eliminate a square get then destroy
                     if(rules.canEliminate && rules.squareElim) {
 
-                        //initialize array for holding square
-                        Cell[] squareToEliminate = new Cell[4];
-
-                        squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
+                        //initialize array for holding square                       
+                        Cell[] squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
                         eliminateJewels(squareToEliminate.ToList<Cell>());
                         hasEliminated = true;
 
@@ -303,37 +302,36 @@ public class Game_manager : MonoBehaviour
 
                 //checks that the got item is a jewel 
                 if(cellItem1.GetComponent<Jewel>() != null && cellItem2.GetComponent<Jewel>() != null) {
+                   
                     //changes parents of the jewel and then updates the transform
                     cellItem1.SetParent(selectedCells[1].transform);
                     cellItem1.GetComponent<Jewel>().currentParent = selectedCells[1];
 
+                    //gets the new position for the jewel to move to 
                     Transform jewelToMove = cellItem1.GetComponent<Jewel>().transform;
                     Vector3 finalPos = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
-
                     
-                    //cellItem1.transform.position = new Vector3(selectedCells[1].transform.position.x, selectedCells[1].transform.position.y, -0.1f);
-                    
+                    //starts the lerp coroutine
                     StartCoroutine(Lerp(jewelToMove.position, finalPos, jewelToMove, false));
 
+                    //repeat the process on the other jewel
                     cellItem2.SetParent(selectedCells[0].transform);
                     cellItem2.GetComponent<Jewel>().currentParent = selectedCells[0];
                     
                     jewelToMove = cellItem2.GetComponent<Jewel>().transform;
                     finalPos = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
-
-                    
-                    //cellItem2.transform.position = new Vector3(selectedCells[0].transform.position.x, selectedCells[0].transform.position.y, -0.1f);
-
+                                    
                     StartCoroutine(Lerp(jewelToMove.position, finalPos, jewelToMove, false));
 
+                    //decrements the turn counter and sets can swap to false
                     turnCounter--;
-
                     rules.canSwap = false;
 
                     //deselects cells so sprites react properly
                     selectedCells[0].setSelected(false);
                     selectedCells[1].setSelected(false);
 
+                    //clear the selected cells for next turn
                     selectedCells[0] = null;
                     selectedCells[1] = null;
                 }
@@ -367,8 +365,9 @@ public class Game_manager : MonoBehaviour
                 if(jewelToDestroy.GetComponentInChildren<Concretion>()) {
                     concretion(jewelToDestroy.GetComponentInParent<Cell>());
                 }
-              
-                Destroy(jewelToDestroy.gameObject);
+
+                jewelToDestroy.GetComponent<Jewel>().animController.SetTrigger("Destroy");            
+                //Destroy(jewelToDestroy.gameObject);
             }
         }
 
@@ -424,6 +423,8 @@ public class Game_manager : MonoBehaviour
     }
 
     public void jewelFall() {
+
+         
 
         if(!isPaused && !isLerping && !isFalling) {
             //loops through the should fall array getting the new parent and adjusting to the right transform
@@ -664,14 +665,13 @@ public class Game_manager : MonoBehaviour
         }
 
         //moved this from jewel fall to here as there were problems with jewels not breaking due to isLerping         
-        if(moveable != null) {
+        if(moveable != null && isFalling) {
             moveable.position = endPos;
             if(moveable.GetComponentInChildren<Fragile>() != null) {
                 jewelToBreak = moveable.GetComponent<Jewel>();
                 shouldBreak = true;
             }
         }
-
 
         isFalling = false;
         isLerping = false;       

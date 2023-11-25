@@ -822,6 +822,7 @@ MonoBehaviour:
   isPaused: 0
   shouldQuit: 0
   isLerping: 0
+  isFalling: 0
   gameEnded: 0
 --- !u!4 &143350168
 Transform:

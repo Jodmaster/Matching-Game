@@ -1,4 +1,5 @@
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static IGridItem;
@@ -16,11 +17,10 @@ public class Jewel : MonoBehaviour, IGridItem {
 
     public Sprite sprite;
     public Sprite selectedSprite;
-
-    public LayerMask jewelLayer;
-
+    public Animator animController;
+    public LayerMask jewelLayer;  
     
-    
+    public bool destroying;
 
     // Start is called before the first frame update
     void Start() {
@@ -29,10 +29,19 @@ public class Jewel : MonoBehaviour, IGridItem {
 
         currentParent = transform.parent.gameObject.GetComponent<Cell>();
         name = "Jewel_" + currentParent.GetComponent<Cell>().cellNumber;
+        
+        animController = GetComponent<Animator>();       
+        destroying = false;
+
+        if(jewelColor == Color.green) {
+            animController.SetLayerWeight(0, 1f);
+        } else if ( jewelColor == Color.blue) {
+            animController.SetLayerWeight(1, 1f);
+        }
+
 
         //sets sprite based on jewel color
         rend = GetComponent<SpriteRenderer>();
-
         rend.sprite = sprite;
     }
 
@@ -53,7 +62,7 @@ public class Jewel : MonoBehaviour, IGridItem {
 
             switch(usableItems.Count) {
                 case 1:
-                    usableItems[0].trans.position = transform.position + new Vector3(-0.3f, 0.3f, 1f);                    
+                    usableItems[0].trans.position = transform.position + new Vector3(-0.3f, 0.3f, 1f);
                     break;
                 case 2:
                     usableItems[1].trans.position = transform.position + new Vector3(0.3f, 0.3f, 1f);
@@ -64,8 +73,9 @@ public class Jewel : MonoBehaviour, IGridItem {
                 case 4:
                     usableItems[3].trans.position = transform.position + new Vector3(0.3f, -0.3f, 1f);
                     break;
-            }                           
+            }
         }
+
     }
 
     //raycasts down to the next cell to see if it should fall down to the next cell
@@ -86,5 +96,9 @@ public class Jewel : MonoBehaviour, IGridItem {
     
     public void setUsableItem(IUsableItem item) {
         usableItems.Add(item);
+    }
+
+    public void destroyThis() {
+        Destroy(gameObject);
     }
 }
