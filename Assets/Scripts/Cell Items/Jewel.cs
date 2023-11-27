@@ -37,6 +37,8 @@ public class Jewel : MonoBehaviour, IGridItem {
             animController.SetLayerWeight(0, 1f);
         } else if ( jewelColor == Color.blue) {
             animController.SetLayerWeight(1, 1f);
+        } else if ( jewelColor == Color.red) {
+            animController.SetLayerWeight(2, 1f);
         }
 
 
