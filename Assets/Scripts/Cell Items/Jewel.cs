@@ -33,6 +33,7 @@ public class Jewel : MonoBehaviour, IGridItem {
         animController = GetComponent<Animator>();       
         destroying = false;
 
+        //sets animator component to the correct layer based on color
         if(jewelColor == Color.green) {
             animController.SetLayerWeight(0, 1f);
         } else if ( jewelColor == Color.blue) {

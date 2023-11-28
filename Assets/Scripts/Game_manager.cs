@@ -212,16 +212,20 @@ public class Game_manager : MonoBehaviour
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
 
+        //end conditions
         if(!isLerping && !isPaused && !isFalling)
         {
+            //no jewels win
             if(findCellsWithJewels().Count == 0) {
                 endGame(true);
             }
 
+            //no turns and can't eliminate
             if(turnCounter == 0 && !eliminateSearch()) {
                 endGame(false);
             }
 
+            //3 or less jewels and no swaps or eliminations
             if(findCellsWithJewels().Count < 4 && !eliminateSearch() && !swapSearch()) {
                 endGame(false);
             }
@@ -422,28 +426,38 @@ public class Game_manager : MonoBehaviour
         return null;
     }
 
-    public void jewelFall() {
-
-         
+    public void jewelFall() {        
+        /**
+            if not paused or lerping and is not also already falling
+            trying to make everything fall at the same time causes problems with 
+            the raycast and stacking of multiple items in one cell 
+        **/
 
         if(!isPaused && !isLerping && !isFalling) {
             //loops through the should fall array getting the new parent and adjusting to the right transform
             for(int i = 0; i < shouldFall.Count; i++) {
 
+                //ini the jewel to check
                 Jewel currentJewel = shouldFall[i];
-                Cell currentParent = currentJewel.currentParent;
-                Cell goalCell;
-
-                goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-
+                
+                //if the current jewel exists
                 if(currentJewel != null) {
+
+                    //get the jewels parent cell and the goal cell
+                    Cell currentParent = currentJewel.currentParent;
+                    Cell goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1]);
+
+                    //set the jewels new parent
                     currentJewel.transform.SetParent(goalCell.transform);
                     currentJewel.currentParent = goalCell;
                     
+                    //gets the new position to move to
                     Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
 
+                    //starts the lerping coroutine
                     StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
 
+                    //removes the jewel from the should fall array
                     shouldFall.Remove(currentJewel);
                 }
             }
