@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Level_2_setup : MonoBehaviour, ILevel_Setup
 {
+    //set usable items for the level here
+    int _bombLimit = 1;
+    int _colorBombLimit = 1;
+    int _concreteLimit = 1;
+    int _fragileLimit = 1;
+    int _turnLimit = 3;
+
     /**
      * for the jewel color map:
      * 
@@ -39,4 +46,13 @@ public class Level_2_setup : MonoBehaviour, ILevel_Setup
 
     public int[,] itemToContain { get => _itemToContain; }
 
+    public int bombLimit { get => _bombLimit; }
+
+    public int colorBombLimit { get => _colorBombLimit; }
+
+    public int concreteLimit { get => _concreteLimit; }
+
+    public int fragileLimit { get => _fragileLimit; }
+
+    public int turnLimit { get => _turnLimit; }
 }

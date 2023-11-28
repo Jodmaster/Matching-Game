@@ -11,16 +11,14 @@ public class Game_manager : MonoBehaviour
     public int currentTurn;
     
     public int bombsUsed;
-    public int bombLimit;
-
     public int colorBombsUsed;
-    public int colorBombsLimit;
-
     public int concreteUsed;
-    public int concreteLimit;
-
     public int fragileUsed;
-    public int fragileLimit;
+
+    public int bombLimit = 0;    
+    public int colorBombsLimit = 0;   
+    public int concreteLimit = 0;   
+    public int fragileLimit = 0;
 
     public GameObject LevelIni;
 
@@ -42,32 +40,29 @@ public class Game_manager : MonoBehaviour
     [SerializeField] public int numOfRows;
 
     public ILevel_Setup level;
-    public Initialize_Grid gridInit;
-    public Rule_checks rules;
+    private Initialize_Grid gridInit;
+    private Rule_checks rules;
 
     public Sprite redSprite;
     public Sprite blueSprite;
     public Sprite greenSprite;
-
     public Sprite redSelectedSprite;
     public Sprite blueSelectedSprite;
     public Sprite greenSelectedSprite;
 
-    bool shouldBomb;
-    public Cell bombCell;
+    private bool shouldBomb;
+    private Cell bombCell;
 
-    bool shouldColourBomb;
-    public Cell colourBombCell;
-    public Color originColor;
+    private bool shouldColourBomb;
+    private Cell colourBombCell;
+    private Color originColor;
 
-    public bool shouldConcrete;
-    public Cell concreteCell;
+   
     
     private bool shouldBreak;
     private Jewel jewelToBreak;
 
     public bool isPaused;
-    
     public bool shouldQuit;
     
     private Pause_menu pauseMenu;
@@ -86,70 +81,20 @@ public class Game_manager : MonoBehaviour
     private void GameSetup()
     {
         cells = new Cell[numOfRows, numOfCols];
-
         //finds both the grid initialization script and level item placement script 
-        gridInit = FindObjectOfType<Initialize_Grid>();
+       
+        getUIandLogicObjects();
         level = GetComponentInChildren<ILevel_Setup>();
-        rules = FindObjectOfType<Rule_checks>();
-        pauseMenu = FindObjectOfType<Pause_menu>();
-        gameEndMenu = FindObjectOfType<Game_end>();
 
         //inializes the grid 
         gridInit.GridInitilization();
 
         //find all cell objects and set cell counter to 0 for item setting
         Cell[] cellsTemp = FindObjectsOfType<Cell>();
-
-        int cellCounter = 0;
-
-        //loops through all the cells to fill them with the appropriate item 
-        for (int rowCount = 0; rowCount < numOfRows; rowCount++)
-        {
-            for (int colCount = 0; colCount < numOfCols; colCount++)
-            {
-                Cell cellToSet = cellsTemp[cellCounter];
-                switch (level.itemToContain[rowCount, colCount])
-                {
-                    case 0:
-
-                        cellToSet.setContainedItem(jewel);
-                        Jewel jewelToSet = (Jewel)cellToSet.containedItem;
-                        
-                        switch(level.jewelColorMap[rowCount, colCount]){  
-                            case 0:
-                                jewelToSet.jewelColor = Color.red;
-                                jewelToSet.sprite = redSprite;
-                                jewelToSet.selectedSprite = redSelectedSprite;
-                                break;
-                            case 1:
-                                jewelToSet.jewelColor = Color.blue;
-                                jewelToSet.sprite = blueSprite;
-                                jewelToSet.selectedSprite = blueSelectedSprite;
-                                break;
-                            case 2:
-                                jewelToSet.jewelColor = Color.green;
-                                jewelToSet.sprite = greenSprite;
-                                jewelToSet.selectedSprite = greenSelectedSprite;
-                                break;
-                        }
-
-                        cellToSet.containedItem = jewelToSet;
-                        
-                        break;
-                    
-                    case 1:
-                        cellToSet.setContainedItem(blocker);
-                        break;
-                    case 2:
-                        cellToSet.setContainedItem(sand);
-                        break;
-                }
-                cellCounter++;
-            }
-        }
-
+        setCellItems(cellsTemp);
+        
         //need to reset for next for loop
-        cellCounter = 0;
+        int cellCounter = 0;
 
         //reformats raw cell array into 2d array for easier management of cells and applying rules
         for (int rowCount = 0; rowCount < numOfRows; rowCount++)
@@ -159,33 +104,71 @@ public class Game_manager : MonoBehaviour
                 cells[rowCount, colCount] = cellsTemp[cellCounter]; 
                 cellCounter++;
             }
-
         }
 
-        //sets the limits and start number for the usable items
-        turnCounter = 5;
+        //sets the limits for the usable items and turn counter
+        turnCounter = level.turnLimit;
+        bombLimit = level.bombLimit;
+        fragileLimit = level.fragileLimit;
+        colorBombsLimit = level.colorBombLimit;
+        concreteLimit = level.concreteLimit;
 
-        bombLimit = 2;
-        bombsUsed = 0;
+        void setCellItems(Cell[] cellsTemp) {
+            int counter = 0;
 
-        colorBombsLimit = 2;
-        colorBombsUsed = 0;
+            //loops through all the cells to fill them with the appropriate item 
+            for(int rowCount = 0; rowCount < numOfRows; rowCount++) {
+                for(int colCount = 0; colCount < numOfCols; colCount++) {
+                    Cell cellToSet = cellsTemp[counter];
+                    switch(level.itemToContain[rowCount, colCount]) {
+                        case 0:
 
-        concreteLimit = 2;
-        concreteUsed = 0;
+                            cellToSet.setContainedItem(jewel);
+                            Jewel jewelToSet = (Jewel)cellToSet.containedItem;
 
-        fragileLimit = 2;
-        fragileUsed = 0;
+                            switch(level.jewelColorMap[rowCount, colCount]) {
+                                case 0:
+                                    jewelToSet.jewelColor = Color.red;
+                                    jewelToSet.sprite = redSprite;
+                                    jewelToSet.selectedSprite = redSelectedSprite;
+                                    break;
+                                case 1:
+                                    jewelToSet.jewelColor = Color.blue;
+                                    jewelToSet.sprite = blueSprite;
+                                    jewelToSet.selectedSprite = blueSelectedSprite;
+                                    break;
+                                case 2:
+                                    jewelToSet.jewelColor = Color.green;
+                                    jewelToSet.sprite = greenSprite;
+                                    jewelToSet.selectedSprite = greenSelectedSprite;
+                                    break;
+                            }
 
+                            cellToSet.containedItem = jewelToSet;
+
+                            break;
+
+                        case 1:
+                            cellToSet.setContainedItem(blocker);
+                            break;
+                        case 2:
+                            cellToSet.setContainedItem(sand);
+                            break;
+                    }
+                    counter++;
+                }
+            }
+        }
+
+        void getUIandLogicObjects() {
+            rules = FindObjectOfType<Rule_checks>();
+            pauseMenu = FindObjectOfType<Pause_menu>();
+            gameEndMenu = FindObjectOfType<Game_end>();
+            gridInit = FindObjectOfType<Initialize_Grid>();
+        }
     }
 
-    public void FixedUpdate() {
-
-        if(shouldBreak && jewelToBreak != null) {
-           List<Cell> jewelToDestroy = new List<Cell>() {jewelToBreak.GetComponentInParent<Cell>()};          
-           eliminateJewels(jewelToDestroy); 
-           shouldBreak = false; 
-        } 
+    public void FixedUpdate() {       
 
         //check bombs first so new jewels haven't fallen into empty cells
         if(shouldBomb) { bombExplosion(bombCell); }
@@ -197,10 +180,64 @@ public class Game_manager : MonoBehaviour
          * fixed update seems to have spaced the calculations out enough that these clashes don't happen
         */
         if(sandToFall.Count > 0) { sandFall(); }
-        if(shouldFall.Count > 0) { jewelFall(); }      
+        if(shouldFall.Count > 0) { jewelFall(); }
 
-        //TODO levels
-        if(currentTurn <= 0) { }
+        if(shouldBreak && jewelToBreak != null) {
+            List<Cell> jewelToDestroy = new List<Cell>() { jewelToBreak.GetComponentInParent<Cell>() };
+            eliminateJewels(jewelToDestroy);
+            shouldBreak = false;
+        }
+
+        //end conditions
+        if(!isLerping && !isPaused && !isFalling && shouldFall.Count == 0 && cellsToEliminate.Count == 0) {
+            bool shouldEnd = false;
+            bool isWin = false;
+
+            //inits values for end of game checks
+            List<Cell> cellsWithJewels = findCellsWithJewels();
+
+            //no turns and can't eliminate
+            if(turnCounter == 0 && !eliminateSearch()) {
+                Debug.Log("no turns no elims loss");
+                shouldEnd = true;
+                isWin = false;
+            }
+
+            //3 or less jewels and no swaps or eliminations
+            if(cellsWithJewels.Count < 4 && !eliminateSearch() && !swapSearch()) {
+                Debug.Log("3 or less no elims or swap loss");
+                shouldEnd = true;
+                isWin = false;
+            }
+
+            //no jewels win
+            if(cellsWithJewels.Count == 0) {
+                Debug.Log("no jewel win");
+                shouldEnd = true;
+                isWin = true;
+            }
+
+            //all jewels same color and no elims loss
+            if(cellsWithJewels.Count > 0 && !eliminateSearch()) {
+                Color iniColor = cellsWithJewels[0].GetComponentInChildren<Jewel>().jewelColor;
+                int correctColCount = 0;
+
+                for(int i = 0; i < cellsWithJewels.Count; i++) {
+                    if(cellsWithJewels[i].GetComponentInChildren<Jewel>().jewelColor == iniColor) {
+                        correctColCount++;
+                    }
+                }
+
+                if(correctColCount == cellsWithJewels.Count) {
+                    shouldEnd = true;
+                    isWin = false;
+                }
+            }
+
+            if(shouldEnd) {
+                endGame(isWin);
+            }
+        }
     }
 
     public void Update() {
@@ -211,27 +248,7 @@ public class Game_manager : MonoBehaviour
         if(pauseMenu.isOpen || gameEndMenu.isOpen) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
-
-        //end conditions
-        if(!isLerping && !isPaused && !isFalling)
-        {
-            //no jewels win
-            if(findCellsWithJewels().Count == 0) {
-                endGame(true);
-            }
-
-            //no turns and can't eliminate
-            if(turnCounter == 0 && !eliminateSearch()) {
-                endGame(false);
-            }
-
-            //3 or less jewels and no swaps or eliminations
-            if(findCellsWithJewels().Count < 4 && !eliminateSearch() && !swapSearch()) {
-                endGame(false);
-            }
-           
-        }
-        
+                
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
@@ -242,48 +259,11 @@ public class Game_manager : MonoBehaviour
 
                 playerTurn();
 
+
                 if(selectedCells[0] != null) {
-
-                    rules.getSquareToEliminate(selectedCells[0]);
-                    bool hasEliminated = false;
-
-                    //if we can eliminate a square get then destroy
-                    if(rules.canEliminate && rules.squareElim) {
-
-                        //initialize array for holding square                       
-                        Cell[] squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
-                        eliminateJewels(squareToEliminate.ToList<Cell>());
-                        hasEliminated = true;
-
-                        rules.squareElim = false;
-
-                        for(int i = 0; i < selectedCells.Length; i++) {
-                            selectedCells[i] = null;
-                        }
-                    }
-
-                    //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
-                    rules.CheckThreeInARow(selectedCells[0]);
-                    Cell[] cellsToEliminate = new Cell[3];
-
-                    //if we can eliminate a row or a column get then destroy
-                    if(rules.canEliminate && !hasEliminated) {
-                        if(rules.colElim) {
-                            cellsToEliminate = rules.threeInCol;
-                        } else if(rules.rowElim) {
-                            cellsToEliminate = rules.threeInRow;
-                        }
-
-                        //then delete the jewels from the cell
-                        eliminateJewels(cellsToEliminate.ToList<Cell>());
-                        hasEliminated = true;
-
-                        //clears selected cells so that the player can't swap afterwards
-                        for(int i = 0; i < selectedCells.Length; i++) {
-                            selectedCells[i] = null;
-                        }
-                    }
+                    playerElim();
                 }
+                    
 
                 if(selectedCells[0] != null && selectedCells[1] != null) {
                     rules.canSwapJewels(selectedCells[0], selectedCells[1]);
@@ -296,7 +276,50 @@ public class Game_manager : MonoBehaviour
         }
     }
 
-    public void swapJewels() {
+    private void playerElim() {
+            
+        rules.getSquareToEliminate(selectedCells[0]);
+        bool hasEliminated = false;
+
+        //if we can eliminate a square get then destroy
+        if(rules.canEliminate && rules.squareElim) {
+
+            //initialize array for holding square                       
+            Cell[] squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
+            eliminateJewels(squareToEliminate.ToList<Cell>());
+            hasEliminated = true;
+
+            rules.squareElim = false;
+
+            for(int i = 0; i < selectedCells.Length; i++) {
+                selectedCells[i] = null;
+            }
+        }
+
+        //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
+        rules.CheckThreeInARow(selectedCells[0]);
+        Cell[] cellsToEliminate = new Cell[3];
+
+        //if we can eliminate a row or a column get then destroy
+        if(rules.canEliminate && !hasEliminated) {
+            if(rules.colElim) {
+                cellsToEliminate = rules.threeInCol;
+            } else if(rules.rowElim) {
+                cellsToEliminate = rules.threeInRow;
+            }
+
+            //then delete the jewels from the cell
+            eliminateJewels(cellsToEliminate.ToList<Cell>());
+            hasEliminated = true;
+
+            //clears selected cells so that the player can't swap afterwards
+            for(int i = 0; i < selectedCells.Length; i++) {
+                selectedCells[i] = null;
+            }
+        }
+    }
+    
+    private void swapJewels() {
         //gets the children of the selected cells
         if(selectedCells[0] != null && selectedCells[1] != null) {
             if(selectedCells[0].transform.childCount > 0 && selectedCells[1].transform.childCount > 0) { 
@@ -343,13 +366,21 @@ public class Game_manager : MonoBehaviour
         }     
     }
 
-    public void eliminateJewels(List<Cell> cellsToElim) {
+    private void eliminateJewels(List<Cell> cellsToElim) {
         
         //loops through the cells to Elim and destroys the contained jewels
         for(int i = 0; i < cellsToElim.Count; i++) {
             if(cellsToElim[i] != null) {
                 
                 Transform jewelToDestroy = cellsToElim[i].transform.GetChild(0);
+
+                if(jewelToDestroy.GetComponentInChildren<Colour_Bomb>()) {
+                    colourBombCell = jewelToDestroy.GetComponentInParent<Cell>();
+
+                    //need to get color here otherwise jewel will be missing in colorBombExplosion method
+                    originColor = jewelToDestroy.GetComponent<Jewel>().jewelColor;
+                    shouldColourBomb = true;
+                }
 
                 //have to use bools for the usable items for functional execution order in fixed update
                 //checks if a jewel contains the bomb item
@@ -358,27 +389,19 @@ public class Game_manager : MonoBehaviour
                     shouldBomb = true;
                 }
 
-                if(jewelToDestroy.GetComponentInChildren<Colour_Bomb>()) {
-                    colourBombCell = jewelToDestroy.GetComponentInParent<Cell>();
-                    
-                    //need to get color here otherwise jewel will be missing in colorBombExplosion method
-                    originColor = jewelToDestroy.GetComponent<Jewel>().jewelColor;
-                    shouldColourBomb = true;
-                }
-
                 if(jewelToDestroy.GetComponentInChildren<Concretion>()) {
                     concretion(jewelToDestroy.GetComponentInParent<Cell>());
                 }
 
                 jewelToDestroy.GetComponent<Jewel>().animController.SetTrigger("Destroy");            
-                //Destroy(jewelToDestroy.gameObject);
+                
             }
         }
 
         rules.canEliminate = false;
     }
 
-    public void playerTurn() {
+    private void playerTurn() {
         
         //raycasts where the player clicks
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -426,7 +449,7 @@ public class Game_manager : MonoBehaviour
         return null;
     }
 
-    public void jewelFall() {        
+    private void jewelFall() {        
         /**
             if not paused or lerping and is not also already falling
             trying to make everything fall at the same time causes problems with 
@@ -439,32 +462,33 @@ public class Game_manager : MonoBehaviour
 
                 //ini the jewel to check
                 Jewel currentJewel = shouldFall[i];
-                
+
                 //if the current jewel exists
                 if(currentJewel != null) {
+                    if(currentJewel.checkJewelBelow()) {
+                        //get the jewels parent cell and the goal cell
+                        Cell currentParent = currentJewel.currentParent;
+                        Cell goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1]);
 
-                    //get the jewels parent cell and the goal cell
-                    Cell currentParent = currentJewel.currentParent;
-                    Cell goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1]);
+                        //set the jewels new parent
+                        currentJewel.transform.SetParent(goalCell.transform);
+                        currentJewel.currentParent = goalCell;
 
-                    //set the jewels new parent
-                    currentJewel.transform.SetParent(goalCell.transform);
-                    currentJewel.currentParent = goalCell;
-                    
-                    //gets the new position to move to
-                    Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
+                        //gets the new position to move to
+                        Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
 
-                    //starts the lerping coroutine
-                    StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
+                        //starts the lerping coroutine
+                        StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
 
-                    //removes the jewel from the should fall array
-                    shouldFall.Remove(currentJewel);
-                }
+                        //removes the jewel from the should fall array
+                        shouldFall.Remove(currentJewel);
+                    } else { shouldFall.Remove(shouldFall[i]); }
+                } else { shouldFall.Remove(shouldFall[i]); }
             }
         }
     }
 
-    public void sandFall() {
+    private void sandFall() {
         
         if(!isLerping && !isPaused && !isFalling) {
             //loops through the sand to fall array checks which direction it should fall and then updates parent and transform 
@@ -500,7 +524,7 @@ public class Game_manager : MonoBehaviour
         }
     }
 
-    public void bombExplosion(Cell origin) {
+    private void bombExplosion(Cell origin) {
 
         //when called gets the 3x3 square around the origin, loops through to find 
         //cells with jewels and then eliminates them
@@ -521,7 +545,7 @@ public class Game_manager : MonoBehaviour
         eliminateJewels(cellsWithJewels);        
     }
 
-    public void colourBombExplosion() {
+    private void colourBombExplosion() {
         
         List<Cell> cellWithCorrectColour = new List<Cell>();
         
@@ -545,7 +569,7 @@ public class Game_manager : MonoBehaviour
         eliminateJewels(cellWithCorrectColour);
     }
 
-    public void concretion(Cell cellToConcrete) {
+    private void concretion(Cell cellToConcrete) {
         if(cellToConcrete.GetComponentInChildren<Jewel>() != null) {    
             cellToConcrete.setContainedItem(blocker);
         }
