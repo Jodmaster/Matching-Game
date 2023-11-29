@@ -40,8 +40,7 @@ public class Start_game : MonoBehaviour {
         levelSelectOpen = true;
     }
 
-    private void loadLevelOne() {
-        Debug.Log("Level 1 loading");
+    private void loadLevelOne() {        
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Level_1");
     }
 

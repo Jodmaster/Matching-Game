@@ -15,7 +15,10 @@ public class Game_manager : MonoBehaviour
     public int bombsUsed; public int colorBombsUsed; public int concreteUsed; public int fragileUsed;
     public int bombLimit; public int colorBombsLimit; public int concreteLimit; public int fragileLimit;
 
-    
+    //the number of rows and columns that the grid of cells will have
+    public int numOfCols;
+    public int numOfRows;
+
     //arrays for storing all the cells and the selected cells
     public Cell[,] cells;
     public Cell[] selectedCells;
@@ -28,11 +31,7 @@ public class Game_manager : MonoBehaviour
     public List<Sand> sandToFall = new List<Sand>();
 
     //prefabs for each cell item
-    public Jewel jewel; public Blocker blocker; public Sand sand;
-
-    //the number of rows and columns that the grid of cells will have
-    public int numOfCols;
-    public int numOfRows;
+    public Jewel jewel; public Blocker blocker; public Sand sand;  
 
     //the main logic components
     private ILevel_Setup level;
@@ -54,7 +53,7 @@ public class Game_manager : MonoBehaviour
     private bool shouldBreak; private Jewel jewelToBreak;
 
     public bool isPaused;
-    public bool shouldQuit;
+    
 
     //bools for lerping
     public bool isLerping; public bool isFalling;
@@ -201,6 +200,7 @@ public class Game_manager : MonoBehaviour
         if(pauseMenu.isOpen || gameEndMenu.isOpen) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
+        
                 
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
@@ -485,8 +485,7 @@ public class Game_manager : MonoBehaviour
                 } else if(currentSand.fallRight) {
                     goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] + 1));
                     if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
-                } else {
-                    
+                } else {                  
                     sandToFall.Remove(currentSand); 
                 }
             }
@@ -513,6 +512,7 @@ public class Game_manager : MonoBehaviour
     private void quitGame() {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Title_Screen");
     }
+
 
     private void endGame(bool wonGame) {
         gameEndMenu.showEnd(wonGame);

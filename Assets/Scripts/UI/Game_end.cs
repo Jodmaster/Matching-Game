@@ -8,15 +8,18 @@ public class Game_end : MonoBehaviour
     Button resetButton;
     Button quitButton;
 
+
     GameObject resetObject;
     GameObject quitObject;
     GameObject winObject;
     GameObject loseObject;
+
     GameObject menu;
 
     public bool isOpen;
     public bool reset;
     public bool shouldquit;
+    public bool nextLevel;
 
     // Start is called before the first frame update
     void Start()
@@ -27,15 +30,16 @@ public class Game_end : MonoBehaviour
         quitObject = GameObject.Find("Quit_Level_End");
         winObject = GameObject.Find("win_Text");
         loseObject = GameObject.Find("Lose_Text");
-
+  
         resetButton = resetObject.GetComponent<Button>();
         quitButton = quitObject.GetComponent<Button>();
+        
 
         menu.SetActive(false);
         winObject.SetActive(false);
         loseObject.SetActive(false);
 
-        isOpen = false;       
+        isOpen = false;
 
         resetButton.onClick.AddListener(resetGame);
         quitButton.onClick.AddListener(quitGame);
@@ -62,7 +66,4 @@ public class Game_end : MonoBehaviour
         shouldquit = true;
     }
 
-    private void winGame() {
-
-    }
 }
