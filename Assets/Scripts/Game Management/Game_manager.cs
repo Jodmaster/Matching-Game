@@ -7,69 +7,57 @@ using UnityEngine.SceneManagement;
 
 public class Game_manager : MonoBehaviour
 {
+   
+    //var for turn counter
     public int turnCounter;
-    public int currentTurn;
     
-    public int bombsUsed;
-    public int colorBombsUsed;
-    public int concreteUsed;
-    public int fragileUsed;
+    //inis the vars for items used and item levels
+    public int bombsUsed; public int colorBombsUsed; public int concreteUsed; public int fragileUsed;
+    public int bombLimit; public int colorBombsLimit; public int concreteLimit; public int fragileLimit;
 
-    public int bombLimit = 0;    
-    public int colorBombsLimit = 0;   
-    public int concreteLimit = 0;   
-    public int fragileLimit = 0;
-
-    public GameObject LevelIni;
-
+    
+    //arrays for storing all the cells and the selected cells
     public Cell[,] cells;
     public Cell[] selectedCells;
 
+    //stores all the cells that need elinating
     public List<Cell> cellsToEliminate;
 
-    public Jewel jewel;
-    public Blocker blocker;
-    public Sand sand;
-
     //stores the jewels that report having nothing below them 
-    public List<Jewel> shouldFall = new List<Jewel> ();
-    public List<Sand> sandToFall = new List<Sand> ();
+    public List<Jewel> shouldFall = new List<Jewel>();
+    public List<Sand> sandToFall = new List<Sand>();
+
+    //prefabs for each cell item
+    public Jewel jewel; public Blocker blocker; public Sand sand;
 
     //the number of rows and columns that the grid of cells will have
-    [SerializeField] public int numOfCols;
-    [SerializeField] public int numOfRows;
+    public int numOfCols;
+    public int numOfRows;
 
-    public ILevel_Setup level;
+    //the main logic components
+    private ILevel_Setup level;
     private Initialize_Grid gridInit;
     private Rule_checks rules;
-
-    public Sprite redSprite;
-    public Sprite blueSprite;
-    public Sprite greenSprite;
-    public Sprite redSelectedSprite;
-    public Sprite blueSelectedSprite;
-    public Sprite greenSelectedSprite;
-
-    private bool shouldBomb;
-    private Cell bombCell;
-
-    private bool shouldColourBomb;
-    private Cell colourBombCell;
-    private Color originColor;
-
-   
+    private UsableItems_Logic itemLogic;
+    private Sprites_Setter spriteSetter;
     
-    private bool shouldBreak;
-    private Jewel jewelToBreak;
+    //pause and end game scripts 
+    private Pause_menu pauseMenu; private Game_end gameEndMenu;
+
+    //bools for bomb
+    public bool shouldBomb; public Cell bombCell;
+
+    //bools for color bomb
+    public bool shouldColourBomb; public Color originColor;
+   
+    //bools for fragile
+    private bool shouldBreak; private Jewel jewelToBreak;
 
     public bool isPaused;
     public bool shouldQuit;
-    
-    private Pause_menu pauseMenu;
-    private Game_end gameEndMenu;
 
-    public bool isLerping;
-    public bool isFalling;
+    //bools for lerping
+    public bool isLerping; public bool isFalling;
     public bool gameEnded = false;
 
     // Start is called before the first frame update
@@ -81,10 +69,10 @@ public class Game_manager : MonoBehaviour
     private void GameSetup()
     {
         cells = new Cell[numOfRows, numOfCols];
+        
         //finds both the grid initialization script and level item placement script 
-       
         getUIandLogicObjects();
-        level = GetComponentInChildren<ILevel_Setup>();
+        level = GetComponent<ILevel_Setup>();
 
         //inializes the grid 
         gridInit.GridInitilization();
@@ -129,18 +117,18 @@ public class Game_manager : MonoBehaviour
                             switch(level.jewelColorMap[rowCount, colCount]) {
                                 case 0:
                                     jewelToSet.jewelColor = Color.red;
-                                    jewelToSet.sprite = redSprite;
-                                    jewelToSet.selectedSprite = redSelectedSprite;
+                                    jewelToSet.sprite = spriteSetter.redSprite;
+                                    jewelToSet.selectedSprite = spriteSetter.redSelectedSprite;
                                     break;
                                 case 1:
                                     jewelToSet.jewelColor = Color.blue;
-                                    jewelToSet.sprite = blueSprite;
-                                    jewelToSet.selectedSprite = blueSelectedSprite;
+                                    jewelToSet.sprite = spriteSetter.blueSprite;
+                                    jewelToSet.selectedSprite = spriteSetter.blueSelectedSprite;
                                     break;
                                 case 2:
                                     jewelToSet.jewelColor = Color.green;
-                                    jewelToSet.sprite = greenSprite;
-                                    jewelToSet.selectedSprite = greenSelectedSprite;
+                                    jewelToSet.sprite = spriteSetter.greenSprite;
+                                    jewelToSet.selectedSprite = spriteSetter.greenSelectedSprite;
                                     break;
                             }
 
@@ -161,18 +149,20 @@ public class Game_manager : MonoBehaviour
         }
 
         void getUIandLogicObjects() {
-            rules = FindObjectOfType<Rule_checks>();
+            rules = GetComponent<Rule_checks>();
             pauseMenu = FindObjectOfType<Pause_menu>();
             gameEndMenu = FindObjectOfType<Game_end>();
             gridInit = FindObjectOfType<Initialize_Grid>();
+            itemLogic = GetComponent<UsableItems_Logic>();
+            spriteSetter = GetComponent<Sprites_Setter>();
         }
     }
 
     public void FixedUpdate() {       
 
         //check bombs first so new jewels haven't fallen into empty cells
-        if(shouldBomb) { bombExplosion(bombCell); }
-        if(shouldColourBomb) { colourBombExplosion(); }
+        if(shouldBomb) { itemLogic.bombExplosion(bombCell); }
+        if(shouldColourBomb) { itemLogic.colourBombExplosion(); }
      
         /**
          * having these methods in update lead to what i think are clashes where both a jewel 
@@ -189,54 +179,17 @@ public class Game_manager : MonoBehaviour
         }
 
         //end conditions
-        if(!isLerping && !isPaused && !isFalling && shouldFall.Count == 0 && cellsToEliminate.Count == 0) {
-            bool shouldEnd = false;
-            bool isWin = false;
+        if(!isLerping && !isPaused && !isFalling && shouldFall.Count == 0 && cellsToEliminate.Count == 0 && sandToFall.Count == 0) {
 
-            //inits values for end of game checks
             List<Cell> cellsWithJewels = findCellsWithJewels();
-
-            //no turns and can't eliminate
-            if(turnCounter == 0 && !eliminateSearch()) {
-                Debug.Log("no turns no elims loss");
-                shouldEnd = true;
-                isWin = false;
-            }
-
-            //3 or less jewels and no swaps or eliminations
-            if(cellsWithJewels.Count < 4 && !eliminateSearch() && !swapSearch()) {
-                Debug.Log("3 or less no elims or swap loss");
-                shouldEnd = true;
-                isWin = false;
-            }
 
             //no jewels win
             if(cellsWithJewels.Count == 0) {
                 Debug.Log("no jewel win");
-                shouldEnd = true;
-                isWin = true;
-            }
-
-            //all jewels same color and no elims loss
-            if(cellsWithJewels.Count > 0 && !eliminateSearch()) {
-                Color iniColor = cellsWithJewels[0].GetComponentInChildren<Jewel>().jewelColor;
-                int correctColCount = 0;
-
-                for(int i = 0; i < cellsWithJewels.Count; i++) {
-                    if(cellsWithJewels[i].GetComponentInChildren<Jewel>().jewelColor == iniColor) {
-                        correctColCount++;
-                    }
-                }
-
-                if(correctColCount == cellsWithJewels.Count) {
-                    shouldEnd = true;
-                    isWin = false;
-                }
-            }
-
-            if(shouldEnd) {
-                endGame(isWin);
-            }
+                endGame(true);
+            } else if (loseGameConditions(cellsWithJewels)) {
+                endGame(false);
+            }           
         }
     }
 
@@ -274,6 +227,32 @@ public class Game_manager : MonoBehaviour
                 }
             }          
         }
+
+        
+    }
+
+    private bool loseGameConditions(List<Cell> jewelCells) {
+        
+        bool shouldEnd = false;
+        
+        //inits values for end of game checks
+        
+
+        //no turns and can't eliminate
+        if(turnCounter == 0 && !eliminateSearch()) {
+            Debug.Log("no turns no elims loss");
+            shouldEnd = true;
+            
+        }
+
+        //3 or less jewels and no swaps or eliminations
+        if(jewelCells.Count < 4 && !eliminateSearch() && !swapSearch()) {
+            Debug.Log("3 or less no elims or swap loss");
+            shouldEnd = true;
+            
+        }
+
+        return shouldEnd;
     }
 
     private void playerElim() {
@@ -366,7 +345,7 @@ public class Game_manager : MonoBehaviour
         }     
     }
 
-    private void eliminateJewels(List<Cell> cellsToElim) {
+    public void eliminateJewels(List<Cell> cellsToElim) {
         
         //loops through the cells to Elim and destroys the contained jewels
         for(int i = 0; i < cellsToElim.Count; i++) {
@@ -375,7 +354,7 @@ public class Game_manager : MonoBehaviour
                 Transform jewelToDestroy = cellsToElim[i].transform.GetChild(0);
 
                 if(jewelToDestroy.GetComponentInChildren<Colour_Bomb>()) {
-                    colourBombCell = jewelToDestroy.GetComponentInParent<Cell>();
+                    
 
                     //need to get color here otherwise jewel will be missing in colorBombExplosion method
                     originColor = jewelToDestroy.GetComponent<Jewel>().jewelColor;
@@ -390,7 +369,7 @@ public class Game_manager : MonoBehaviour
                 }
 
                 if(jewelToDestroy.GetComponentInChildren<Concretion>()) {
-                    concretion(jewelToDestroy.GetComponentInParent<Cell>());
+                    itemLogic.concretion(jewelToDestroy.GetComponentInParent<Cell>());
                 }
 
                 jewelToDestroy.GetComponent<Jewel>().animController.SetTrigger("Destroy");            
@@ -481,7 +460,7 @@ public class Game_manager : MonoBehaviour
                         StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
 
                         //removes the jewel from the should fall array
-                        shouldFall.Remove(currentJewel);
+                        if(!currentJewel.checkJewelBelow()) { shouldFall.Remove(currentJewel); }
                     } else { shouldFall.Remove(shouldFall[i]); }
                 } else { shouldFall.Remove(shouldFall[i]); }
             }
@@ -506,6 +485,9 @@ public class Game_manager : MonoBehaviour
                 } else if(currentSand.fallRight) {
                     goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] + 1));
                     if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+                } else {
+                    
+                    sandToFall.Remove(currentSand); 
                 }
             }
         }
@@ -522,58 +504,7 @@ public class Game_manager : MonoBehaviour
 
             sandToFall.Remove(currentSand);       
         }
-    }
-
-    private void bombExplosion(Cell origin) {
-
-        //when called gets the 3x3 square around the origin, loops through to find 
-        //cells with jewels and then eliminates them
-
-        Cell[] cellsToElim = rules.CheckSquare(origin);
-        List<Cell> cellsWithJewels = new List<Cell>();
-
-        for(int i = 0; i < cellsToElim.Length; i++) {
-            if(cellsToElim[i] != null) {
-                if(cellsToElim[i].GetComponentInChildren<Jewel>()) {
-                    cellsWithJewels.Add(cellsToElim[i]);
-                }
-            }
-        }
-
-        shouldBomb = false;
-        bombCell = null;
-        eliminateJewels(cellsWithJewels);        
-    }
-
-    private void colourBombExplosion() {
-        
-        List<Cell> cellWithCorrectColour = new List<Cell>();
-        
-        //loop through all the cells and checks if they contain a same color jewel
-        for(int row = 0; row < numOfRows; row++) {
-            for(int col = 0; col < numOfCols; col++) {
-                
-                Cell cellToCheck = cells[row, col];
-                
-                if(cellToCheck.GetComponentInChildren<Jewel>() != null) {
-                    if(cellToCheck.GetComponentInChildren<Jewel>().jewelColor == originColor) {
-                        cellWithCorrectColour.Add(cellToCheck);
-                    }
-                }                                
-            }
-        }
-
-        //deletes all jewels with same color
-        shouldColourBomb = false;
-        colourBombCell = null;
-        eliminateJewels(cellWithCorrectColour);
-    }
-
-    private void concretion(Cell cellToConcrete) {
-        if(cellToConcrete.GetComponentInChildren<Jewel>() != null) {    
-            cellToConcrete.setContainedItem(blocker);
-        }
-    }
+    }    
 
     private void resetGame() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -681,7 +612,7 @@ public class Game_manager : MonoBehaviour
         float lerpDuration;
 
         //if the item is falling it should lerp faster dictated by the passed bool
-        if(falling) { lerpDuration = 0.25f; } else { lerpDuration = 0.5f; }
+        if(falling) { lerpDuration = 0.2f; } else { lerpDuration = 0.5f; }
 
         //Lerp
         while(timeElap < lerpDuration) {
@@ -714,5 +645,4 @@ public class Game_manager : MonoBehaviour
         isFalling = false;
         isLerping = false;       
     }
-
 }

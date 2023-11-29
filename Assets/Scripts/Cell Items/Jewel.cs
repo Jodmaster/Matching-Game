@@ -60,7 +60,8 @@ public class Jewel : MonoBehaviour, IGridItem {
             }
         }
 
-        //switches the position of items so they aren't overlayed on top of each other
+        //switches the position of items so they aren't overlayed on top of each other 
+        //needs to be in update for lerping 
         foreach(IUsableItem usableItem in usableItems) {
 
             switch(usableItems.Count) {

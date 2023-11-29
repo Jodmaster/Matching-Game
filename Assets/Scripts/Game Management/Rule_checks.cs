@@ -18,7 +18,7 @@ public class Rule_checks : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        manager = FindObjectOfType<Game_manager>();
+        manager = GetComponent<Game_manager>();
         canSwap = false;
         canEliminate = false;
     }
