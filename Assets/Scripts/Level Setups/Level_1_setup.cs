@@ -4,8 +4,8 @@ public class Level_1_setup : MonoBehaviour, ILevel_Setup
 {
     //set usable items for the level here
     int _bombLimit = 2;
-    int _colorBombLimit = 2;
-    int _concreteLimit = 2;
+    int _colorBombLimit = 1;
+    int _concreteLimit = 1;
     int _fragileLimit = 2;
     int _turnLimit = 5;
 

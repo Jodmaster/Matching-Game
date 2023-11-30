@@ -168,8 +168,8 @@ public class Game_manager : MonoBehaviour
          * and sand simultaneously go into the same cell because they both think it's empty moving these into
          * fixed update seems to have spaced the calculations out enough that these clashes don't happen
         */
-        if(sandToFall.Count > 0) { sandFall(); }
         if(shouldFall.Count > 0) { jewelFall(); }
+        if(sandToFall.Count > 0) { sandFall(); }
 
         if(shouldBreak && jewelToBreak != null) {
             List<Cell> jewelToDestroy = new List<Cell>() { jewelToBreak.GetComponentInParent<Cell>() };
@@ -650,7 +650,7 @@ public class Game_manager : MonoBehaviour
                 shouldBreak = true;
             }
         }
-
+        
         isFalling = false;
         isLerping = false;       
     }
