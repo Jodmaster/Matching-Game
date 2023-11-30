@@ -7,12 +7,13 @@ public class Game_end : MonoBehaviour
 
     Button resetButton;
     Button quitButton;
-
+    Button nextButton;
 
     GameObject resetObject;
     GameObject quitObject;
     GameObject winObject;
     GameObject loseObject;
+    GameObject nextObject;
 
     GameObject menu;
 
@@ -30,10 +31,11 @@ public class Game_end : MonoBehaviour
         quitObject = GameObject.Find("Quit_Level_End");
         winObject = GameObject.Find("win_Text");
         loseObject = GameObject.Find("Lose_Text");
+        nextObject = GameObject.Find("Next_Level");
   
         resetButton = resetObject.GetComponent<Button>();
         quitButton = quitObject.GetComponent<Button>();
-        
+        nextButton = nextObject.GetComponent<Button>();
 
         menu.SetActive(false);
         winObject.SetActive(false);
@@ -43,6 +45,7 @@ public class Game_end : MonoBehaviour
 
         resetButton.onClick.AddListener(resetGame);
         quitButton.onClick.AddListener(quitGame);
+        nextButton.onClick.AddListener(toNextLevel);
     }
 
     public void showEnd(bool wonGame) {
@@ -66,4 +69,7 @@ public class Game_end : MonoBehaviour
         shouldquit = true;
     }
 
+    private void toNextLevel() {        
+        nextLevel = true;
+    }
 }

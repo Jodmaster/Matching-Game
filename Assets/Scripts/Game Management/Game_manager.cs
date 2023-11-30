@@ -200,6 +200,7 @@ public class Game_manager : MonoBehaviour
         if(pauseMenu.isOpen || gameEndMenu.isOpen) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
+        if(gameEndMenu.nextLevel) { nextLevel(); }
         
                 
         //if there are cells in the selected array set them to selected
@@ -460,7 +461,7 @@ public class Game_manager : MonoBehaviour
                         StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
 
                         //removes the jewel from the should fall array
-                        if(!currentJewel.checkJewelBelow()) { shouldFall.Remove(currentJewel); }
+                        if(currentJewel.checkJewelBelow()) { shouldFall.Remove(currentJewel); }
                     } else { shouldFall.Remove(shouldFall[i]); }
                 } else { shouldFall.Remove(shouldFall[i]); }
             }
@@ -513,6 +514,14 @@ public class Game_manager : MonoBehaviour
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Title_Screen");
     }
 
+    private void nextLevel() {
+        
+        int currentSceneIn = SceneManager.GetActiveScene().buildIndex;       
+             
+        if(currentSceneIn < SceneManager.sceneCountInBuildSettings) {
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(currentSceneIn + 1);
+        }
+    }
 
     private void endGame(bool wonGame) {
         gameEndMenu.showEnd(wonGame);
