@@ -5,8 +5,8 @@ public class Level_1_setup : MonoBehaviour, ILevel_Setup
     //set usable items for the level here
     int _bombLimit = 2;
     int _colorBombLimit = 1;
-    int _concreteLimit = 1;
-    int _fragileLimit = 2;
+    int _concreteLimit = 0;
+    int _fragileLimit = 1;
     int _turnLimit = 5;
 
     /**
@@ -32,12 +32,12 @@ public class Level_1_setup : MonoBehaviour, ILevel_Setup
      * 2 for sand
      */
     public int[,] _itemToContain =
-            {{0,2,0,2,0,0},
+           {{0,0,0,2,0,0},
             {0,0,2,1,0,0},
-            { 0,0,1,1,0,0},
-            { 0,0,0,1,2,0},
-            { 0,2,0,0,0,0},
-            { 0,0,0,0,0,0}};
+            {0,0,1,1,0,0},
+            {0,0,0,1,2,0},
+            {0,2,0,0,0,0},
+            {0,0,0,0,0,0}};
     
 
     public int[,] jewelColorMap { get => _jewelColorMap; }

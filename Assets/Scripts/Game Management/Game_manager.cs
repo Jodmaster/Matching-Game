@@ -52,12 +52,13 @@ public class Game_manager : MonoBehaviour
     //bools for fragile
     private bool shouldBreak; private Jewel jewelToBreak;
 
-    public bool isPaused;
-    
+    public bool isPaused = false;  
 
     //bools for lerping
     public bool isLerping; public bool isFalling;
     public bool gameEnded = false;
+
+    public bool isTutorial;
 
     // Start is called before the first frame update
     void Start()
@@ -197,7 +198,7 @@ public class Game_manager : MonoBehaviour
         if(gameEnded) { pauseMenu.disableButton(); }
 
         //checking for pause menu and end game onClick events and executing commands       
-        if(pauseMenu.isOpen || gameEndMenu.isOpen) { isPaused = true; } else { isPaused = false; }
+        if(pauseMenu.isOpen || gameEndMenu.isOpen || isTutorial) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
         if(gameEndMenu.nextLevel) { nextLevel(); }
