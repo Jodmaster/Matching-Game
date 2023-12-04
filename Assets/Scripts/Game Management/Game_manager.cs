@@ -259,16 +259,29 @@ public class Game_manager : MonoBehaviour
 
     private void playerElim() {
             
-        rules.getSquareToEliminate(selectedCells[0]);
+        
         bool hasEliminated = false;
 
         //if we can eliminate a square get then destroy
-        if(rules.canEliminate && rules.squareElim) {
+        if(rules.canEliminate && (rules.squareElim || rules.colElim || rules.rowElim) {
+
+            List<Cell> cellsToElim = new List<Cell>();
 
             //initialize array for holding square                       
-            Cell[] squareToEliminate = rules.getSquareToEliminate(selectedCells[0]);
-            eliminateJewels(squareToEliminate.ToList<Cell>());
-            hasEliminated = true;
+            if (rules.squareElim) {
+                Cell[] squareToElim = new Cell[4];
+                squareToElim = rules.getSquareToEliminate(selectedCells[0]);
+
+                for (int i = 0; i < squareToElim.Length; i++) {
+                    if (!cellsToElim.Contains(squareToElim[i])) {
+                        cellsToElim.Add(squareToElim[i]);
+                    }
+                }
+            }
+
+            if (rules.colElim) {
+                List<Cell> colToElim = new List<Cell>(); 
+            }
 
             rules.squareElim = false;
 
