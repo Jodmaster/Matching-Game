@@ -258,55 +258,43 @@ public class Game_manager : MonoBehaviour
     }
 
     private void playerElim() {
-            
-        
-        bool hasEliminated = false;
+
+        rules.CheckThreeInARow(selectedCells[0]);
+        rules.CheckSquare(selectedCells[0]);
 
         //if we can eliminate a square get then destroy
-        if(rules.canEliminate && (rules.squareElim || rules.colElim || rules.rowElim) {
+        if(rules.canEliminate && (rules.squareElim || rules.colElim || rules.rowElim)) { 
 
             List<Cell> cellsToElim = new List<Cell>();
 
             //initialize array for holding square                       
-            if (rules.squareElim) {
+            if(rules.squareElim) {
                 Cell[] squareToElim = new Cell[4];
                 squareToElim = rules.getSquareToEliminate(selectedCells[0]);
 
-                for (int i = 0; i < squareToElim.Length; i++) {
-                    if (!cellsToElim.Contains(squareToElim[i])) {
+                for(int i = 0; i < squareToElim.Length; i++) {
+                    if(!cellsToElim.Contains(squareToElim[i])) {
                         cellsToElim.Add(squareToElim[i]);
+                    }
+                }
+            }                      
+
+            if(rules.colElim) {
+                for(int i = 0; i < rules.threeInCol.Count; i++) {
+                    if(!cellsToElim.Contains(rules.threeInCol[i])) {
+                        cellsToElim.Add(rules.threeInCol[i]);
                     }
                 }
             }
 
-            if (rules.colElim) {
-                List<Cell> colToElim = new List<Cell>(); 
+            if(rules.rowElim) {
+                for(int i = 0; i < rules.threeInRow.Count; i++) {
+                    if(!cellsToElim.Contains(rules.threeInRow[i])) {
+                        cellsToElim.Add(rules.threeInRow[i]);
+                    }
+                }
             }
 
-            rules.squareElim = false;
-
-            for(int i = 0; i < selectedCells.Length; i++) {
-                selectedCells[i] = null;
-            }
-        }
-
-        //runs check three in a row so that if there are cells to eliminate the arrays in rule_check will be filled and canElim set to true
-        rules.CheckThreeInARow(selectedCells[0]);
-        Cell[] cellsToEliminate = new Cell[3];
-
-        //if we can eliminate a row or a column get then destroy
-        if(rules.canEliminate && !hasEliminated) {
-            if(rules.colElim) {
-                cellsToEliminate = rules.threeInCol;
-            } else if(rules.rowElim) {
-                cellsToEliminate = rules.threeInRow;
-            }
-
-            //then delete the jewels from the cell
-            eliminateJewels(cellsToEliminate.ToList<Cell>());
-            hasEliminated = true;
-
-            //clears selected cells so that the player can't swap afterwards
             for(int i = 0; i < selectedCells.Length; i++) {
                 selectedCells[i] = null;
             }

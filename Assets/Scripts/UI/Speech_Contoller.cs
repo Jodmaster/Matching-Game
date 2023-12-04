@@ -20,9 +20,7 @@ public class Speech_Contoller : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         trans = GetComponentsInChildren<RectTransform>();
-        text = GetComponentInChildren<TMP_Text>();
-
-        
+        text = GetComponentInChildren<TMP_Text>();        
     
     }
 

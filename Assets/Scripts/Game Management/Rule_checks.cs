@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 public class Rule_checks : MonoBehaviour
@@ -11,8 +13,8 @@ public class Rule_checks : MonoBehaviour
     public bool rowElim;
     public bool squareElim;
 
-    public Cell[] threeInCol;
-    public Cell[] threeInRow;
+    public List<Cell> threeInCol;
+    public List<Cell> threeInRow;
     public Cell[] sqaure;
 
     // Start is called before the first frame update
@@ -91,12 +93,11 @@ public class Rule_checks : MonoBehaviour
 
     public void CheckThreeInARow(Cell originCell) {
 
-        Color originJewel;
-        int unbrokenStreak;
+        Color originJewel;      
 
         //arrays to hold all the cells to check
-        Cell[] colToCheck = new Cell[5];
-        Cell[] rowToCheck = new Cell[5];
+        Cell[] colToCheck = new Cell[6];
+        Cell[] rowToCheck = new Cell[6];
 
         //getting origin jewel info
         if(originCell != null) {
@@ -116,99 +117,129 @@ public class Rule_checks : MonoBehaviour
         }
             
         void getColumn() {
-            for(int i = 0; i < colToCheck.Length; i++) {
-                colToCheck[i] = manager.getCellAtPosition(originCell.position[0] + i - 2, originCell.position[1]);
+            for(int colCount = 0; colCount < colToCheck.Length; colCount++) {
+                colToCheck[colCount] = manager.getCellAtPosition(colCount, originCell.position[1]);
             }
         }
 
         void getRow() {
-            for(int i = 0; i < rowToCheck.Length; i++) {
-                rowToCheck[i] = manager.getCellAtPosition(originCell.position[0], originCell.position[1] + i - 2);
+            for(int rowCount = 0; rowCount < rowToCheck.Length; rowCount++) {
+                rowToCheck[rowCount] = manager.getCellAtPosition(originCell.position[0], rowCount);
             }
         }
 
-        Cell[] checkCanEliminateColumn() {
+        List<Cell> checkCanEliminateColumn() {
 
             //unbroken streak tracks how many cells of the right color have been found in a row 
-            unbrokenStreak = 0;
+            
             colElim = false;
-            threeInCol = new Cell[3];
+            threeInCol = new List<Cell>();
 
-            //whole loop goes through colToCheck makes sure it's not an empty square and that it contains a jewel
-            for(int i = 0; i < colToCheck.Length; i++) {
-                if(colToCheck[i] != null) {
-                    if(colToCheck[i].transform.childCount == 1) {
-                        if(!colToCheck[i].GetComponentInChildren<Blocker>() && !colToCheck[i].GetComponentInChildren<Sand>()) {
-                            //checks if the right color if yes then add it to the three in a row array and increase the unbroken streak counter
-                            if(colToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                                threeInCol[unbrokenStreak] = colToCheck[i];
+            for(int x = 0; x < manager.numOfRows - originCell.position[0]; x++) {
 
-                                unbrokenStreak++;
-                            } else {
-                                //clears the three in row if there's a break in colors and resets the unbroken streak
-                                for(int x = 0; x < threeInCol.Length; x++) { threeInCol[x] = null; }
-                                unbrokenStreak = 0;
-                            }
-                        } else { unbrokenStreak = 0; }
-                    } else { unbrokenStreak = 0; }
-                } else { unbrokenStreak = 0; }
+                Cell cellColDown;
 
-                //if the unbroken streak reaches 3 break out of the loop 
-                if(unbrokenStreak == 3) {
-                    break;
-                }
+                if(manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x) != null) {
+                    cellColDown = manager.getCellAtPosition(originCell.position[0], originCell.position[1] - x);
+                } else { break; };
+
+                // we check that it's first not an invalid cell then if it has any children then if those children are either blockers or sand
+                // and then finally for the right jewel color if none of these conditions are false we break out of the loop 
+
+                if(cellColDown != null) {
+                    if(cellColDown.transform.childCount == 1) {
+                        if(!cellColDown.GetComponentInChildren<Blocker>() && !cellColDown.GetComponentInChildren<Sand>()) {
+                            if(cellColDown.transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                                threeInCol.Add(cellColDown);
+                            } else { break; }
+                        } else { break; }
+                    } else { break; }
+                } else { break; }
             }
 
-            int threeInColCounter = 0;
-            for(int i = 0; i < threeInCol.Length; i++) {
-                if(threeInCol[i] != null) { threeInColCounter++; }
+            for(int x = 1; x < 5; x++) {
 
-                if(threeInColCounter == 3) { canEliminate = true; } else { colElim = false; }
+                Cell CellColUp;
+
+                if(manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x) != null) {
+                    CellColUp = manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x);
+                } else { break; };
+
+                // we check that it's first not an invalid cell then if it has any children then if those children are either blockers or sand
+                // and then finally for the right jewel color if none of these conditions are false we break out of the loop 
+
+                if(CellColUp != null) {
+                    if(CellColUp.transform.childCount == 1) {
+                        if(!CellColUp.GetComponentInChildren<Blocker>() && !CellColUp.GetComponentInChildren<Sand>()) {
+                            if(CellColUp.transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                                threeInCol.Add(CellColUp);
+                            } else { break; }
+                        } else { break; }
+                    } else { break; }
+                } else { break; }
             }
+
+            Debug.Log(threeInCol.Count);
+
+            if(threeInCol.Count >= 3) { canEliminate = true; } else { colElim = false; }
 
             if(canEliminate) { colElim = true; return threeInCol; } else { return null; }
         }
 
-        Cell[] checkCanEliminateRow() {
-            //resets unbroken streak for next four loop 
-            unbrokenStreak = 0;
+       List<Cell> checkCanEliminateRow() {        
+            
             rowElim = false;
-            threeInRow = new Cell[3];
+            threeInRow = new List<Cell>();          
 
-            for(int i = 0; i < rowToCheck.Length; i++) {
-                if(rowToCheck[i] != null) {
-                    if(rowToCheck[i].transform.childCount == 1) {
-                        if(!rowToCheck[i].GetComponentInChildren<Blocker>() && !rowToCheck[i].GetComponentInChildren<Sand>()) {
-                            //checks if the right color if yes then add it to the three in a col array and increase the unbroken streak counter
-                            if(rowToCheck[i].transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
-                                threeInRow[unbrokenStreak] = rowToCheck[i];
-                                unbrokenStreak++;
-                            } else {
-                                //clears the three in row if there's a break in colors and resets the unbroken streak
-                                for(int x = 0; x < threeInRow.Length; x++) { threeInRow[x] = null; }
-                                unbrokenStreak = 0;
-                            }
-                        } else { unbrokenStreak = 0; }
-                    } else { unbrokenStreak = 0; }
-                } else { unbrokenStreak = 0; }
+            for(int x = 1; x < 5; x++) {
 
-                //if the unbroken streak reaches 3 break out of the loop 
-                if(unbrokenStreak == 3) {
-                    break;
-                }
+                Cell cellRowLeft;
+
+                if(manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1]) != null) {
+                    cellRowLeft = manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1]);
+                } else { break; };
+
+                // we check that it's first not an invalid cell then if it has any children then if those children are either blockers or sand
+                // and then finally for the right jewel color if none of these conditions are false we break out of the loop 
+                
+                if(cellRowLeft != null) {
+                    if(cellRowLeft.transform.childCount == 1) {
+                        if(!cellRowLeft.GetComponentInChildren<Blocker>() && !cellRowLeft.GetComponentInChildren<Sand>()) {
+                            if(cellRowLeft.transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                                threeInRow.Add(cellRowLeft);
+                            } else { break; }
+                        } else { break; }
+                    } else { break; }
+                } else { break; }
             }
 
-            //eliminating columns takes priority over rows this can be changed //TODO play test and find out 
-            if(!canEliminate) {
-                int threeInRowCounter = 0;
-                for(int i = 0; i < threeInRow.Length; i++) {
-                    if(threeInRow[i] != null) { threeInRowCounter++; }
-                }
+            for(int x = 1; x < 5; x++) {
 
+                Cell cellRowRight;
 
-                if(threeInRowCounter == 3) { canEliminate = true; } else { rowElim = false; }
+                if(manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1]) != null) {
+                    cellRowRight = manager.getCellAtPosition(originCell.position[0] + x, originCell.position[1]);
+                } else { break; };
+                
+
+                // we check that it's first not an invalid cell then if it has any children then if those children are either blockers or sand
+                // and then finally for the right jewel color if none of these conditions are false we break out of the loop 
+
+                if(cellRowRight != null) {
+                    if(cellRowRight.transform.childCount == 1) {
+                        if(!cellRowRight.GetComponentInChildren<Blocker>() && !cellRowRight.GetComponentInChildren<Sand>()) {
+                            if(cellRowRight.transform.GetChild(0).GetComponent<Jewel>().jewelColor == originJewel) {
+                                threeInRow.Add(cellRowRight);
+                            } else { break; }
+                        } else { break; }
+                    } else { break; }
+                } else { break; }
             }
 
+            //eliminating columns takes priority over rows this can be changed //TODO play test and find out          
+            if(threeInRow.Count >= 3) { canEliminate = true; } else { rowElim = false; }
+            
+            //if we can eliminate the row return the list with
             if(canEliminate) { rowElim = true; return threeInRow; } else { return null; }
         }
     }
