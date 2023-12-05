@@ -907,6 +907,7 @@ MonoBehaviour:
   isLerping: 0
   isFalling: 0
   gameEnded: 0
+  isTutorial: 0
 --- !u!4 &143350168
 Transform:
   m_ObjectHideFlags: 0
