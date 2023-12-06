@@ -171,8 +171,8 @@ public class Game_manager : MonoBehaviour
          * and sand simultaneously go into the same cell because they both think it's empty moving these into
          * fixed update seems to have spaced the calculations out enough that these clashes don't happen
         */
-        if(shouldFall.Count > 0) { jewelFall(); }
-        if(sandToFall.Count > 0) { sandFall(); }
+        if(shouldFall.Count > 0 && !isFalling && !isLerping ) { jewelFall(); }
+        if(sandToFall.Count > 0 && !isFalling && !isLerping) { sandFall(); }
 
         if(shouldBreak && jewelToBreak != null) {
             List<Cell> jewelToDestroy = new List<Cell>() { jewelToBreak.GetComponentInParent<Cell>() };
@@ -262,7 +262,7 @@ public class Game_manager : MonoBehaviour
     private void playerElim() {
 
         rules.CheckThreeInARow(selectedCells[0]);
-        rules.CheckSquare(selectedCells[0]);
+        rules.getSquareToEliminate(selectedCells[0]);
 
         //if we can eliminate a square get then destroy
         if(rules.canEliminate && (rules.squareElim || rules.colElim || rules.rowElim)) { 
@@ -300,6 +300,8 @@ public class Game_manager : MonoBehaviour
             for(int i = 0; i < selectedCells.Length; i++) {
                 selectedCells[i] = null;
             }
+
+            eliminateJewels(cellsToElim);
         }
     }
     

@@ -133,14 +133,14 @@ public class Rule_checks : MonoBehaviour
             //unbroken streak tracks how many cells of the right color have been found in a row 
             
             colElim = false;
-            threeInCol = new List<Cell>();
+            threeInCol = new List<Cell>() { originCell };
 
-            for(int x = 0; x < manager.numOfRows - originCell.position[0]; x++) {
+            for(int x = 1; x < originCell.position[0]; x++) {
 
                 Cell cellColDown;
 
-                if(manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x) != null) {
-                    cellColDown = manager.getCellAtPosition(originCell.position[0], originCell.position[1] - x);
+                if(manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1]) != null) {
+                    cellColDown = manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1] );
                 } else { break; };
 
                 // we check that it's first not an invalid cell then if it has any children then if those children are either blockers or sand
@@ -157,12 +157,12 @@ public class Rule_checks : MonoBehaviour
                 } else { break; }
             }
 
-            for(int x = 1; x < 5; x++) {
+            for(int x = 1; x <= manager.numOfRows - (originCell.position[0] - 1); x++) {
 
                 Cell CellColUp;
 
-                if(manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x) != null) {
-                    CellColUp = manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x);
+                if(manager.getCellAtPosition(originCell.position[0] + x, originCell.position[1] ) != null) {
+                    CellColUp = manager.getCellAtPosition(originCell.position[0] + x, originCell.position[1]);
                 } else { break; };
 
                 // we check that it's first not an invalid cell then if it has any children then if those children are either blockers or sand
@@ -181,22 +181,27 @@ public class Rule_checks : MonoBehaviour
 
             Debug.Log(threeInCol.Count);
 
-            if(threeInCol.Count >= 3) { canEliminate = true; } else { colElim = false; }
-
-            if(canEliminate) { colElim = true; return threeInCol; } else { return null; }
+            if(threeInCol.Count >= 3) {
+                canEliminate = true;
+                colElim = true;
+                return threeInCol;
+            } else {
+                colElim = false;
+                return null;
+            }
         }
 
        List<Cell> checkCanEliminateRow() {        
             
             rowElim = false;
-            threeInRow = new List<Cell>();          
+            threeInRow = new List<Cell>() {originCell};          
 
-            for(int x = 1; x < 5; x++) {
+            for(int x = 1; x < originCell.position[1] + 1; x++) {
 
                 Cell cellRowLeft;
 
-                if(manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1]) != null) {
-                    cellRowLeft = manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1]);
+                if(manager.getCellAtPosition(originCell.position[0], originCell.position[1] - x) != null) {
+                    cellRowLeft = manager.getCellAtPosition(originCell.position[0], originCell.position[1] - x);
                 } else { break; };
 
                 // we check that it's first not an invalid cell then if it has any children then if those children are either blockers or sand
@@ -213,12 +218,12 @@ public class Rule_checks : MonoBehaviour
                 } else { break; }
             }
 
-            for(int x = 1; x < 5; x++) {
+            for(int x = 1; x <= manager.numOfCols - (originCell.position[1] + 1); x++) {
 
                 Cell cellRowRight;
 
-                if(manager.getCellAtPosition(originCell.position[0] - x, originCell.position[1]) != null) {
-                    cellRowRight = manager.getCellAtPosition(originCell.position[0] + x, originCell.position[1]);
+                if(manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x) != null) {
+                    cellRowRight = manager.getCellAtPosition(originCell.position[0], originCell.position[1] + x);
                 } else { break; };
                 
 
@@ -236,11 +241,14 @@ public class Rule_checks : MonoBehaviour
                 } else { break; }
             }
 
-            //eliminating columns takes priority over rows this can be changed //TODO play test and find out          
-            if(threeInRow.Count >= 3) { canEliminate = true; } else { rowElim = false; }
-            
-            //if we can eliminate the row return the list with
-            if(canEliminate) { rowElim = true; return threeInRow; } else { return null; }
+            if(threeInRow.Count >= 3) {
+                canEliminate = true;
+                rowElim = true;
+                return threeInRow;
+            } else {
+                rowElim = false;
+                return null;
+            }
         }
     }
 
