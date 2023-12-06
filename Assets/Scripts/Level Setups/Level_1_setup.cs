@@ -17,12 +17,12 @@ public class Level_1_setup : MonoBehaviour, ILevel_Setup
      * 2 for blue jewels
      */
     public int[,] _jewelColorMap =
-           {{0,0,2,0,1,0},
-            {1,2,0,1,1,1},
-            {2,2,2,2,1,2},
-            {0,2,0,1,0,1},
-            {0,0,2,1,0,0},
-            {0,0,0,2,0,0}};
+           {{0,2,2,0,1,0},
+            {2,0,0,0,0,0},
+            {0,2,0,0,1,0},
+            {1,1,0,0,0,1},
+            {1,2,1,1,0,1},
+            {1,1,2,2,1,1}};
 
     /**
      * for the item map:
@@ -32,11 +32,11 @@ public class Level_1_setup : MonoBehaviour, ILevel_Setup
      * 2 for sand
      */
     public int[,] _itemToContain =
-           {{0,0,0,2,0,0},
+           {{0,0,2,2,0,0},
             {0,0,2,1,0,0},
             {0,0,1,1,0,0},
-            {0,0,0,1,2,0},
-            {0,2,0,0,0,0},
+            {0,0,0,1,0,0},
+            {0,0,0,0,0,0},
             {0,0,0,0,0,0}};
     
 

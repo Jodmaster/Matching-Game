@@ -135,7 +135,7 @@ public class Rule_checks : MonoBehaviour
             colElim = false;
             threeInCol = new List<Cell>() { originCell };
 
-            for(int x = 1; x < originCell.position[0]; x++) {
+            for(int x = 1; x < originCell.position[0] + 1; x++) {
 
                 Cell cellColDown;
 
