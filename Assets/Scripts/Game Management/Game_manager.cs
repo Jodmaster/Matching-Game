@@ -171,7 +171,7 @@ public class Game_manager : MonoBehaviour
          * and sand simultaneously go into the same cell because they both think it's empty moving these into
          * fixed update seems to have spaced the calculations out enough that these clashes don't happen
         */
-        if(shouldFall.Count > 0 && !isFalling && !isLerping ) { jewelFall(); }
+        if(shouldFall.Count > 0 && !isFalling && !isLerping) { jewelFall(); }
         if(sandToFall.Count > 0 && !isFalling && !isLerping) { sandFall(); }
 
         if(shouldBreak && jewelToBreak != null) {
@@ -457,15 +457,17 @@ public class Game_manager : MonoBehaviour
                         Cell currentParent = currentJewel.currentParent;
                         Cell goalCell = getCellAtPosition(currentParent.position[0] - 1, currentParent.position[1]);
 
-                        //set the jewels new parent
-                        currentJewel.transform.SetParent(goalCell.transform);
-                        currentJewel.currentParent = goalCell;
+                        if(goalCell.transform.childCount == 0) {
+                            //set the jewels new parent
+                            currentJewel.transform.SetParent(goalCell.transform);
+                            currentJewel.currentParent = goalCell;
 
-                        //gets the new position to move to
-                        Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
+                            //gets the new position to move to
+                            Vector3 posToChangeTo = new Vector3(goalCell.transform.position.x, goalCell.transform.position.y, -0.1f);
 
-                        //starts the lerping coroutine
-                        StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
+                            //starts the lerping coroutine
+                            StartCoroutine(Lerp(currentJewel.transform.position, posToChangeTo, currentJewel.transform, true));
+                        }
 
                         //removes the jewel from the should fall array
                         if(currentJewel.checkJewelBelow()) { shouldFall.Remove(currentJewel); }
@@ -486,13 +488,13 @@ public class Game_manager : MonoBehaviour
 
                 if(currentSand.fallDown) {
                     goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1]));
-                    if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+                    if(goalCell && goalCell.transform.childCount == 0) { SetParentAndTransform(currentSand, goalCell); }
                 } else if(currentSand.fallLeft) {
                     goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] - 1));
-                    if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+                    if(goalCell && goalCell.transform.childCount == 0) { SetParentAndTransform(currentSand, goalCell); }
                 } else if(currentSand.fallRight) {
                     goalCell = getCellAtPosition((currentParent.position[0] - 1), (currentParent.position[1] + 1));
-                    if(goalCell) { SetParentAndTransform(currentSand, goalCell); }
+                    if(goalCell && goalCell.transform.childCount == 0) { SetParentAndTransform(currentSand, goalCell); }
                 } else {                  
                     sandToFall.Remove(currentSand); 
                 }
