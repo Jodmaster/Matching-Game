@@ -186,7 +186,7 @@ public class Rule_checks : MonoBehaviour
             if(canEliminate) { colElim = true; return threeInCol; } else { return null; }
         }
 
-       List<Cell> checkCanEliminateRow() {        
+        List<Cell> checkCanEliminateRow() {        
             
             rowElim = false;
             threeInRow = new List<Cell>();          
