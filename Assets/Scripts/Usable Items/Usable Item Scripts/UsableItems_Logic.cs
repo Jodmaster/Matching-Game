@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UsableItems_Logic : MonoBehaviour
-{
+public class UsableItems_Logic : MonoBehaviour {
     Game_manager manager;
     Rule_checks rules;
-    
+
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start() {
         manager = FindObjectOfType<Game_manager>();
         rules = FindObjectOfType<Rule_checks>();
     }
@@ -63,3 +61,4 @@ public class UsableItems_Logic : MonoBehaviour
         }
     }
 }
+

@@ -156,6 +156,8 @@ public class Game_manager : MonoBehaviour
             itemLogic = GetComponent<UsableItems_Logic>();
             spriteSetter = GetComponent<Sprites_Setter>();
         }
+
+        
     }
 
     public void FixedUpdate() {       
@@ -163,7 +165,7 @@ public class Game_manager : MonoBehaviour
         //check bombs first so new jewels haven't fallen into empty cells
         if(shouldBomb) { itemLogic.bombExplosion(bombCell); }
         if(shouldColourBomb) { itemLogic.colourBombExplosion(); }
-     
+
         /**
          * having these methods in update lead to what i think are clashes where both a jewel 
          * and sand simultaneously go into the same cell because they both think it's empty moving these into
@@ -197,13 +199,13 @@ public class Game_manager : MonoBehaviour
 
         if(gameEnded) { pauseMenu.disableButton(); }
 
+
         //checking for pause menu and end game onClick events and executing commands       
         if(pauseMenu.isOpen || gameEndMenu.isOpen || isTutorial) { isPaused = true; } else { isPaused = false; }
         if(pauseMenu.reset || gameEndMenu.reset) { resetGame(); }
         if(pauseMenu.shouldQuit || gameEndMenu.shouldquit) { quitGame(); }
-        if(gameEndMenu.nextLevel) { nextLevel(); }
-        
-                
+        if(gameEndMenu.nextLevel) { nextLevel(); }     
+
         //if there are cells in the selected array set them to selected
         if (selectedCells[0] != null){selectedCells[0].setSelected(true);}
         if (selectedCells[1] != null){selectedCells[1].setSelected(true);}
@@ -449,6 +451,7 @@ public class Game_manager : MonoBehaviour
 
                 //if the current jewel exists
                 if(currentJewel != null) {
+                   
                     if(currentJewel.checkJewelBelow()) {
                         //get the jewels parent cell and the goal cell
                         Cell currentParent = currentJewel.currentParent;
@@ -618,11 +621,13 @@ public class Game_manager : MonoBehaviour
         return cellsWithJewls;
     }
 
-    IEnumerator Lerp(Vector3 startPos, Vector3 endPos, Transform moveable, bool falling) {
+    IEnumerator Lerp(Vector3 startPos, Vector3 endPos, Transform moveable, bool falling) {        
 
         //set the time that has passed and init the total time of lerp
         float timeElap = 0;
         float lerpDuration;
+
+        isLerping = true;
 
         //if the item is falling it should lerp faster dictated by the passed bool
         if(falling) { lerpDuration = 0.2f; } else { lerpDuration = 0.5f; }
@@ -630,7 +635,7 @@ public class Game_manager : MonoBehaviour
         //Lerp
         while(timeElap < lerpDuration) {
             
-            isLerping = true;
+            
 
             if(moveable != null) {
                 moveable.position = Vector3.Lerp(startPos, endPos, timeElap / lerpDuration);

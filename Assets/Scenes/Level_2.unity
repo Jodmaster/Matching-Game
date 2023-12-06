@@ -845,7 +845,7 @@ MonoBehaviour:
   manager: {fileID: 143350167}
   columnGap: 1.5
   rowGap: 1.5
-  cellPrefab: {fileID: -8245986125788324908, guid: 8e8db845d70246a46b79f3453e2b3748, type: 3}
+  cellPrefab: {fileID: 4787711315838751096, guid: 8e8db845d70246a46b79f3453e2b3748, type: 3}
 --- !u!1 &143350166
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,6 +907,7 @@ MonoBehaviour:
   isLerping: 0
   isFalling: 0
   gameEnded: 0
+  isTutorial: 0
 --- !u!4 &143350168
 Transform:
   m_ObjectHideFlags: 0
