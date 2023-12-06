@@ -262,7 +262,7 @@ public class Game_manager : MonoBehaviour
     private void playerElim() {
 
         rules.CheckThreeInARow(selectedCells[0]);
-        rules.getSquareToEliminate(selectedCells[0]);
+        rules.CheckSquare(selectedCells[0]);
 
         //if we can eliminate a square get then destroy
         if(rules.canEliminate && (rules.squareElim || rules.colElim || rules.rowElim)) { 
@@ -297,16 +297,10 @@ public class Game_manager : MonoBehaviour
                 }
             }
 
-            eliminateJewels(cellsToElim);
-            
             for(int i = 0; i < selectedCells.Length; i++) {
                 selectedCells[i] = null;
             }
-        
-            
         }
-
-       
     }
     
     private void swapJewels() {
